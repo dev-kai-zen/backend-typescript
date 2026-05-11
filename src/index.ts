@@ -10,9 +10,8 @@ import "./modules/rbac/groups/rbac-groups.model";
 import "./modules/rbac/role-permissions/rbac-role-permissions.model";
 import "./modules/rbac/user-roles/rbac-user-roles.model";
 import { createApp } from "./app";
+import { env } from "./config/env-config";
 import { sequelize } from "./config/sequelize-config";
-
-const port = Number(process.env.PORT) || 3000;
 
 async function start() {
   const app = createApp();
@@ -20,8 +19,8 @@ async function start() {
   await sequelize.authenticate();
   console.log("Database connection OK");
 
-  app.listen(port, () => {
-    console.log(`Listening on http://localhost:${port}`);
+  app.listen(env.port, () => {
+    console.log(`Listening on http://localhost:${env.port}`);
   });
 }
 

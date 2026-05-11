@@ -2,6 +2,7 @@ import type { Express } from "express";
 import cors from "cors";
 import express from "express";
 
+import { env } from "./env-config";
 import { setupSwagger } from "./swagger-config";
 
 /**
@@ -9,11 +10,9 @@ import { setupSwagger } from "./swagger-config";
  * When you add a new middleware library, wire it here so `app.ts` stays short.
  */
 export function applyMiddlewares(app: Express): void {
-  const frontendOrigin =
-    process.env.FRONTEND_ORIGIN?.trim() || "http://localhost:5173";
   app.use(
     cors({
-      origin: frontendOrigin,
+      origin: env.frontendOrigin,
       credentials: true,
     }),
   );

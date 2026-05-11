@@ -1,21 +1,14 @@
 import { OAuth2Client } from "google-auth-library";
-import jwt from "jsonwebtoken";
 
+import { env } from "../../config/env-config";
 import { User } from "../users/users.model";
 import * as usersService from "../users/users.service";
-
-function requireEnv(name: string): string {
-  const v = process.env[name];
-  if (!v || v.trim() === "") {
-    throw new Error(`${name} is not set`);
-  }
-  return v.trim();
-}
+import { signAccessToken } from "../../shared/utils/jwt-token";
 
 let oauthClient: OAuth2Client | null = null;
 function getGoogleOAuthClient(): OAuth2Client {
   if (!oauthClient) {
-    oauthClient = new OAuth2Client(requireEnv("GOOGLE_CLIENT_ID"));
+    oauthClient = new OAuth2Client(env.googleClientId);
   }
   return oauthClient;
 }
@@ -24,7 +17,7 @@ export async function loginWithGoogleIdToken(googleToken: string): Promise<{
   accessToken: string;
   user: User;
 }> {
-  const audience = requireEnv("GOOGLE_CLIENT_ID");
+  const audience = env.googleClientId;
   const ticket = await getGoogleOAuthClient().verifyIdToken({
     idToken: googleToken,
     audience,
@@ -76,8 +69,7 @@ export async function loginWithGoogleIdToken(googleToken: string): Promise<{
     throw err;
   }
 
-  const secret = requireEnv("JWT_SECRET");
-  const accessToken = jwt.sign({ sub: user.id }, secret, { expiresIn: "7d" });
+  const accessToken = signAccessToken(user.id);
 
   return { accessToken, user };
 }
