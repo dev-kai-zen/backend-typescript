@@ -1,0 +1,15 @@
+import type { Express } from "express";
+import cors from "cors";
+import express from "express";
+
+/**
+ * Register global middleware here in order (top runs first).
+ * When you add a new middleware library, wire it here so `app.ts` stays short.
+ */
+export function applyMiddlewares(app: Express): void {
+  app.use(cors());
+  app.use(express.json());
+
+  // Add more middlewares below this line, e.g.:
+  // app.use(rateLimiter);
+}

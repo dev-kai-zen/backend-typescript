@@ -23,7 +23,10 @@
   "homepage": "https://github.com/dev-kai-zen/backend-typescript#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "dotenv": "^17.4.2",
+    "express": "^5.1.0",
+    "mysql2": "^3.22.3",
+    "sequelize": "^6.37.8"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
