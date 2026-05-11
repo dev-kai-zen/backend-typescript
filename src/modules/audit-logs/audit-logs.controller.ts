@@ -2,22 +2,6 @@ import type { Request, Response } from "express";
 
 import * as auditLogsService from "./audit-logs.service";
 
-function parseLimit(value: unknown): number | undefined {
-  if (typeof value !== "string") {
-    return undefined;
-  }
-  const n = Number.parseInt(value, 10);
-  return Number.isFinite(n) && n >= 0 ? n : undefined;
-}
-
-function parseOffset(value: unknown): number | undefined {
-  if (typeof value !== "string") {
-    return undefined;
-  }
-  const n = Number.parseInt(value, 10);
-  return Number.isFinite(n) && n >= 0 ? n : undefined;
-}
-
 export async function listAuditLogs(req: Request, res: Response): Promise<void> {
   try {
     const action =
@@ -30,9 +14,25 @@ export async function listAuditLogs(req: Request, res: Response): Promise<void> 
         ? req.query.entityType
         : undefined;
 
+    let limit: number | undefined;
+    if (typeof req.query.limit === "string") {
+      const n = Number.parseInt(req.query.limit, 10);
+      if (Number.isFinite(n) && n >= 0) {
+        limit = n;
+      }
+    }
+
+    let offset: number | undefined;
+    if (typeof req.query.offset === "string") {
+      const n = Number.parseInt(req.query.offset, 10);
+      if (Number.isFinite(n) && n >= 0) {
+        offset = n;
+      }
+    }
+
     const logs = await auditLogsService.listAuditLogs(
       { action, entityType },
-      { limit: parseLimit(req.query.limit), offset: parseOffset(req.query.offset) },
+      { limit, offset },
     );
 
     res.json({ data: logs });

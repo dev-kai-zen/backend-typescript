@@ -3,15 +3,7 @@ import type { WhereOptions } from "sequelize";
 import { AuditLog } from "./audit-logs.model";
 import type { CreateAuditLogInput, ListAuditLogsFilters } from "./audit-logs.types";
 
-function withTimestamp(input: CreateAuditLogInput): Omit<
-  CreateAuditLogInput,
-  "timestamp"
-> & { timestamp: Date } {
-  const timestamp = input.timestamp ?? new Date();
-  return { ...input, timestamp };
-}
-
-export async function findAuditLogs(
+export async function listAuditLogs(
   filters: ListAuditLogsFilters,
   options: { limit: number; offset: number },
 ): Promise<AuditLog[]> {
@@ -31,42 +23,42 @@ export async function findAuditLogs(
   });
 }
 
-export async function insertAuditLog(input: CreateAuditLogInput): Promise<AuditLog> {
-  const row = withTimestamp(input);
+export async function createAuditLog(
+  input: CreateAuditLogInput,
+): Promise<AuditLog> {
   return AuditLog.create({
-    userId: row.userId ?? null,
-    action: row.action,
-    entityType: row.entityType,
-    entityId: row.entityId ?? null,
-    oldValues: row.oldValues ?? null,
-    newValues: row.newValues ?? null,
-    changeFields: row.changeFields ?? null,
-    ipAddress: row.ipAddress ?? null,
-    userAgent: row.userAgent ?? null,
-    timestamp: row.timestamp,
+    userId: input.userId ?? null,
+    action: input.action,
+    entityType: input.entityType,
+    entityId: input.entityId ?? null,
+    oldValues: input.oldValues ?? null,
+    newValues: input.newValues ?? null,
+    changeFields: input.changeFields ?? null,
+    ipAddress: input.ipAddress ?? null,
+    userAgent: input.userAgent ?? null,
+    timestamp: input.timestamp ?? new Date(),
   });
 }
 
-export async function insertAuditLogs(
+export async function createAuditLogs(
   inputs: CreateAuditLogInput[],
 ): Promise<AuditLog[]> {
   if (inputs.length === 0) {
     return [];
   }
-  const rows = inputs.map((input) => {
-    const row = withTimestamp(input);
-    return {
-      userId: row.userId ?? null,
-      action: row.action,
-      entityType: row.entityType,
-      entityId: row.entityId ?? null,
-      oldValues: row.oldValues ?? null,
-      newValues: row.newValues ?? null,
-      changeFields: row.changeFields ?? null,
-      ipAddress: row.ipAddress ?? null,
-      userAgent: row.userAgent ?? null,
-      timestamp: row.timestamp,
-    };
-  });
-  return AuditLog.bulkCreate(rows, { validate: true });
+  return AuditLog.bulkCreate(
+    inputs.map((input) => ({
+      userId: input.userId ?? null,
+      action: input.action,
+      entityType: input.entityType,
+      entityId: input.entityId ?? null,
+      oldValues: input.oldValues ?? null,
+      newValues: input.newValues ?? null,
+      changeFields: input.changeFields ?? null,
+      ipAddress: input.ipAddress ?? null,
+      userAgent: input.userAgent ?? null,
+      timestamp: input.timestamp ?? new Date(),
+    })),
+    { validate: true },
+  );
 }

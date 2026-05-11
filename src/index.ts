@@ -5,6 +5,8 @@ import "./modules/audit-logs/audit-logs.model";
 import "./modules/rbac/roles/roles.model";
 import "./modules/rbac/permissions/rbac-permissions.model";
 import "./modules/rbac/groups/rbac-groups.model";
+import "./modules/rbac/role-permissions/rbac-role-permissions.model";
+import "./modules/rbac/user-roles/rbac-user-roles.model";
 import { createApp } from "./app";
 import { sequelize } from "./config/sequelize-config";
 
