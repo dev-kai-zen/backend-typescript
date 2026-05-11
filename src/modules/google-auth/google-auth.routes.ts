@@ -6,5 +6,6 @@ import * as googleAuthController from "./google-auth.controller";
 export const googleAuthRoutes = Router();
 
 googleAuthRoutes.post("/login", googleAuthController.login);
+googleAuthRoutes.post("/refresh", googleAuthController.refresh);
 googleAuthRoutes.post("/logout", googleAuthController.logout);
 googleAuthRoutes.get("/me", authenticateJwt, googleAuthController.me);

@@ -3,7 +3,11 @@ import { OAuth2Client } from "google-auth-library";
 import { env } from "../../config/env-config";
 import { User } from "../users/users.model";
 import * as usersService from "../users/users.service";
-import { signAccessToken } from "../../shared/utils/jwt-token";
+import {
+  signAccessToken,
+  signRefreshToken,
+  verifyRefreshToken,
+} from "../../shared/utils/jwt-token";
 
 let oauthClient: OAuth2Client | null = null;
 function getGoogleOAuthClient(): OAuth2Client {
@@ -15,6 +19,7 @@ function getGoogleOAuthClient(): OAuth2Client {
 
 export async function loginWithGoogleIdToken(googleToken: string): Promise<{
   accessToken: string;
+  refreshToken: string;
   user: User;
 }> {
   const audience = env.googleClientId;
@@ -70,8 +75,31 @@ export async function loginWithGoogleIdToken(googleToken: string): Promise<{
   }
 
   const accessToken = signAccessToken(user.id);
+  const refreshToken = signRefreshToken(user.id);
 
-  return { accessToken, user };
+  return { accessToken, refreshToken, user };
+}
+
+export async function refreshAccessToken(
+  refreshTokenFromCookie: string,
+): Promise<string> {
+  let userId: number;
+  try {
+    userId = verifyRefreshToken(refreshTokenFromCookie);
+  } catch {
+    const err = new Error("Invalid or expired refresh token");
+    (err as Error & { statusCode?: number }).statusCode = 401;
+    throw err;
+  }
+
+  const user = await User.findByPk(userId);
+  if (!user || !user.isActive) {
+    const err = new Error("Unauthorized");
+    (err as Error & { statusCode?: number }).statusCode = 401;
+    throw err;
+  }
+
+  return signAccessToken(user.id);
 }
 
 export async function getMe(userId: number): Promise<{

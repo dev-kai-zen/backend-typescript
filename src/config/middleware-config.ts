@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 
@@ -16,6 +17,7 @@ export function applyMiddlewares(app: Express): void {
       credentials: true,
     }),
   );
+  app.use(cookieParser());
   app.use(express.json());
 
   setupSwagger(app);

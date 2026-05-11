@@ -32,10 +32,23 @@
 
 /**
  * @openapi
+ * /google-auth/refresh:
+ *   post:
+ *     tags: [Google auth]
+ *     summary: Issue a new access token using the httpOnly refresh cookie
+ *     responses:
+ *       200:
+ *         description: New access token in JSON body
+ *       401:
+ *         description: Missing or invalid refresh cookie
+ */
+
+/**
+ * @openapi
  * /google-auth/logout:
  *   post:
  *     tags: [Google auth]
- *     summary: Client-side logout (no server session in boilerplate)
+ *     summary: Clear refresh cookie and sign out
  *     responses:
  *       200:
  *         description: OK
