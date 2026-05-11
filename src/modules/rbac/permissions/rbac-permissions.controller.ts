@@ -1,24 +1,34 @@
 import type { Request, Response } from "express";
 import { UniqueConstraintError } from "sequelize";
 
+import { formatZodError } from "../../../shared/validation/format-zod-error";
+import {
+  createPermissionBodySchema,
+  listPermissionsQuerySchema,
+  updatePermissionBodySchema,
+} from "./rbac-permissions.schemas";
 import * as rbacPermissionsService from "./rbac-permissions.service";
 
 export async function listPermissions(
   req: Request,
   res: Response,
 ): Promise<void> {
-  let groupId: number | undefined;
-  if (
-    typeof req.query.groupId === "string" &&
-    req.query.groupId !== ""
-  ) {
-    const n = Number.parseInt(req.query.groupId, 10);
-    if (Number.isFinite(n)) {
-      groupId = n;
-    }
+  const groupIdRaw = req.query.groupId;
+  const groupIdSlice =
+    typeof groupIdRaw === "string"
+      ? groupIdRaw
+      : Array.isArray(groupIdRaw) &&
+          groupIdRaw.length > 0 &&
+          typeof groupIdRaw[0] === "string"
+        ? groupIdRaw[0]
+        : undefined;
+  const parsed = listPermissionsQuerySchema.safeParse({ groupId: groupIdSlice });
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
+    return;
   }
   try {
-    const rows = await rbacPermissionsService.listPermissions({ groupId });
+    const rows = await rbacPermissionsService.listPermissions(parsed.data);
     res.json({ data: rows });
   } catch (err) {
     console.error("listPermissions:", err);
@@ -30,33 +40,16 @@ export async function createPermission(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const body = req.body as {
-    permissionCode?: string;
-    permissionDescription?: string | null;
-    groupId?: number | null;
-  };
-  if (!body.permissionCode || typeof body.permissionCode !== "string") {
-    res.status(400).json({ message: "permissionCode is required" });
+  const parsed = createPermissionBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
     return;
-  }
-  let groupId: number | null = null;
-  if (body.groupId !== undefined && body.groupId !== null) {
-    if (typeof body.groupId !== "number" || !Number.isFinite(body.groupId)) {
-      res.status(400).json({ message: "groupId must be a number or null" });
-      return;
-    }
-    groupId = body.groupId;
   }
   try {
     const row = await rbacPermissionsService.createPermission({
-      permissionCode: body.permissionCode,
-      permissionDescription:
-        typeof body.permissionDescription === "string"
-          ? body.permissionDescription
-          : body.permissionDescription === null
-            ? null
-            : null,
-      groupId,
+      permissionCode: parsed.data.permissionCode,
+      permissionDescription: parsed.data.permissionDescription ?? null,
+      groupId: parsed.data.groupId ?? null,
     });
     res.status(201).json(row);
   } catch (err) {
@@ -108,13 +101,13 @@ export async function updatePermission(
     res.status(400).json({ message: "Invalid id" });
     return;
   }
-  const body = req.body as {
-    permissionCode?: string;
-    permissionDescription?: string | null;
-    groupId?: number | null;
-  };
+  const parsed = updatePermissionBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
+    return;
+  }
   try {
-    const row = await rbacPermissionsService.updatePermission(id, body);
+    const row = await rbacPermissionsService.updatePermission(id, parsed.data);
     if (!row) {
       res.status(404).json({ message: "Permission not found" });
       return;

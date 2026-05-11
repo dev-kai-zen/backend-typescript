@@ -1,6 +1,11 @@
 import type { Request, Response } from "express";
 import { UniqueConstraintError } from "sequelize";
 
+import { formatZodError } from "../../../shared/validation/format-zod-error";
+import {
+  createGroupBodySchema,
+  updateGroupBodySchema,
+} from "./rbac-groups.schemas";
 import * as rbacGroupsService from "./rbac-groups.service";
 
 export async function listGroups(
@@ -17,15 +22,13 @@ export async function listGroups(
 }
 
 export async function createGroup(req: Request, res: Response): Promise<void> {
-  const body = req.body as { groupName?: string };
-  if (!body.groupName || typeof body.groupName !== "string") {
-    res.status(400).json({ message: "groupName is required" });
+  const parsed = createGroupBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
     return;
   }
   try {
-    const group = await rbacGroupsService.createGroup({
-      groupName: body.groupName,
-    });
+    const group = await rbacGroupsService.createGroup(parsed.data);
     res.status(201).json(group);
   } catch (err) {
     console.error("createGroup:", err);
@@ -70,15 +73,13 @@ export async function updateGroup(req: Request, res: Response): Promise<void> {
     res.status(400).json({ message: "Invalid id" });
     return;
   }
-  const body = req.body as { groupName?: string };
-  if (!body.groupName || typeof body.groupName !== "string") {
-    res.status(400).json({ message: "groupName is required" });
+  const parsed = updateGroupBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
     return;
   }
   try {
-    const group = await rbacGroupsService.updateGroup(id, {
-      groupName: body.groupName,
-    });
+    const group = await rbacGroupsService.updateGroup(id, parsed.data);
     if (!group) {
       res.status(404).json({ message: "Group not found" });
       return;

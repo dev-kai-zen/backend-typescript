@@ -1,7 +1,8 @@
 import type { Request, Response } from "express";
 import { UniqueConstraintError } from "sequelize";
 
-import type { UpdateUserInput } from "./users.types";
+import { formatZodError } from "../../shared/validation/format-zod-error";
+import { createUserBodySchema, updateUserBodySchema } from "./users.schemas";
 import * as usersService from "./users.service";
 
 export async function listUsers(req: Request, res: Response): Promise<void> {
@@ -21,25 +22,13 @@ export async function listUsers(req: Request, res: Response): Promise<void> {
 }
 
 export async function createUser(req: Request, res: Response): Promise<void> {
-  const body = req.body as {
-    email?: string;
-    googleId?: string | null;
-    fullName?: string | null;
-    pictureUrl?: string | null;
-    isActive?: boolean;
-  };
-  if (!body.email || typeof body.email !== "string") {
-    res.status(400).json({ message: "email is required" });
+  const parsed = createUserBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
     return;
   }
   try {
-    const user = await usersService.createUser({
-      email: body.email,
-      googleId: body.googleId,
-      fullName: body.fullName,
-      pictureUrl: body.pictureUrl,
-      isActive: body.isActive,
-    });
+    const user = await usersService.createUser(parsed.data);
     res.status(201).json(user);
   } catch (err) {
     console.error("createUser:", err);
@@ -87,69 +76,14 @@ export async function updateUser(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  const body = req.body as {
-    email?: string;
-    googleId?: string | null;
-    fullName?: string | null;
-    pictureUrl?: string | null;
-    isActive?: boolean;
-    lastLoginAt?: string | null;
-  };
-
-  const payload: UpdateUserInput = {};
-  if ("email" in body) {
-    if (typeof body.email !== "string") {
-      res.status(400).json({ message: "email must be a string when provided" });
-      return;
-    }
-    payload.email = body.email;
-  }
-  if ("googleId" in body) {
-    if (body.googleId !== null && typeof body.googleId !== "string") {
-      res.status(400).json({ message: "googleId must be a string or null" });
-      return;
-    }
-    payload.googleId = body.googleId;
-  }
-  if ("fullName" in body) {
-    if (body.fullName !== null && typeof body.fullName !== "string") {
-      res.status(400).json({ message: "fullName must be a string or null" });
-      return;
-    }
-    payload.fullName = body.fullName;
-  }
-  if ("pictureUrl" in body) {
-    if (body.pictureUrl !== null && typeof body.pictureUrl !== "string") {
-      res.status(400).json({ message: "pictureUrl must be a string or null" });
-      return;
-    }
-    payload.pictureUrl = body.pictureUrl;
-  }
-  if ("isActive" in body) {
-    if (typeof body.isActive !== "boolean") {
-      res.status(400).json({ message: "isActive must be a boolean" });
-      return;
-    }
-    payload.isActive = body.isActive;
-  }
-  if ("lastLoginAt" in body) {
-    if (body.lastLoginAt === null || body.lastLoginAt === "") {
-      payload.lastLoginAt = null;
-    } else if (typeof body.lastLoginAt === "string") {
-      const d = new Date(body.lastLoginAt);
-      if (Number.isNaN(d.getTime())) {
-        res.status(400).json({ message: "lastLoginAt must be a valid ISO date" });
-        return;
-      }
-      payload.lastLoginAt = d;
-    } else {
-      res.status(400).json({ message: "lastLoginAt must be null or an ISO date string" });
-      return;
-    }
+  const parsed = updateUserBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
+    return;
   }
 
   try {
-    const user = await usersService.updateUser(id, payload);
+    const user = await usersService.updateUser(id, parsed.data);
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;

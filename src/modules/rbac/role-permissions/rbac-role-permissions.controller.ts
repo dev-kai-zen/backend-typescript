@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import { UniqueConstraintError } from "sequelize";
 
+import { formatZodError } from "../../../shared/validation/format-zod-error";
+import { createRolePermissionBodySchema } from "./rbac-role-permissions.schemas";
 import * as rbacRolePermissionsService from "./rbac-role-permissions.service";
 
 export async function listRolePermissions(
@@ -34,31 +36,15 @@ export async function createRolePermission(
     res.status(400).json({ message: "Invalid role id" });
     return;
   }
-  const body = req.body as { permissionId?: number | string };
-  const permissionIdRaw = body.permissionId;
-  let permissionId: number;
-  if (
-    typeof permissionIdRaw === "number" &&
-    Number.isFinite(permissionIdRaw)
-  ) {
-    permissionId = permissionIdRaw;
-  } else if (
-    typeof permissionIdRaw === "string" &&
-    permissionIdRaw.trim() !== ""
-  ) {
-    permissionId = Number.parseInt(permissionIdRaw.trim(), 10);
-  } else {
-    res.status(400).json({ message: "permissionId is required (number)" });
-    return;
-  }
-  if (!Number.isFinite(permissionId)) {
-    res.status(400).json({ message: "permissionId must be a number" });
+  const parsed = createRolePermissionBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
     return;
   }
   try {
     const row = await rbacRolePermissionsService.createRolePermission({
       roleId,
-      permissionId,
+      permissionId: parsed.data.permissionId,
     });
     res.status(201).json(row);
   } catch (err) {

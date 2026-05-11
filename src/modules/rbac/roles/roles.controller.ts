@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import { UniqueConstraintError } from "sequelize";
 
+import { formatZodError } from "../../../shared/validation/format-zod-error";
+import { createRoleBodySchema, updateRoleBodySchema } from "./roles.schemas";
 import * as rolesService from "./roles.service";
 
 export async function listRoles(_req: Request, res: Response): Promise<void> {
@@ -14,19 +16,15 @@ export async function listRoles(_req: Request, res: Response): Promise<void> {
 }
 
 export async function createRole(req: Request, res: Response): Promise<void> {
-  const body = req.body as {
-    roleName?: string;
-    roleDescription?: string | null;
-  };
-  if (!body.roleName || typeof body.roleName !== "string") {
-    res.status(400).json({ message: "roleName is required" });
+  const parsed = createRoleBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
     return;
   }
   try {
     const role = await rolesService.createRole({
-      roleName: body.roleName,
-      roleDescription:
-        typeof body.roleDescription === "string" ? body.roleDescription : null,
+      roleName: parsed.data.roleName,
+      roleDescription: parsed.data.roleDescription ?? null,
     });
     res.status(201).json(role);
   } catch (err) {
@@ -72,14 +70,15 @@ export async function updateRole(req: Request, res: Response): Promise<void> {
     res.status(400).json({ message: "Invalid id" });
     return;
   }
-  const body = req.body as {
-    roleName?: string;
-    roleDescription?: string | null;
-  };
+  const parsed = updateRoleBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
+    return;
+  }
   try {
     const role = await rolesService.updateRole(id, {
-      roleName: body.roleName,
-      roleDescription: body.roleDescription,
+      roleName: parsed.data.roleName,
+      roleDescription: parsed.data.roleDescription,
     });
     if (!role) {
       res.status(404).json({ message: "Role not found" });

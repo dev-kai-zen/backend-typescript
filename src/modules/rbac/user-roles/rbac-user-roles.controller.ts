@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
 import { UniqueConstraintError } from "sequelize";
 
+import { formatZodError } from "../../../shared/validation/format-zod-error";
+import { createUserRoleBodySchema } from "./rbac-user-roles.schemas";
 import * as rbacUserRolesService from "./rbac-user-roles.service";
 
 export async function listUserRoles(
@@ -34,47 +36,16 @@ export async function createUserRole(
     res.status(400).json({ message: "Invalid userId" });
     return;
   }
-  const body = req.body as {
-    roleId?: number | string;
-    assignedBy?: number | string;
-  };
-
-  let roleId: number;
-  if (typeof body.roleId === "number" && Number.isFinite(body.roleId)) {
-    roleId = body.roleId;
-  } else if (typeof body.roleId === "string" && body.roleId.trim() !== "") {
-    roleId = Number.parseInt(body.roleId.trim(), 10);
-  } else {
-    res.status(400).json({ message: "roleId is required (number)" });
+  const parsed = createUserRoleBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
     return;
   }
-  if (!Number.isFinite(roleId)) {
-    res.status(400).json({ message: "roleId must be a number" });
-    return;
-  }
-
-  let assignedBy: number;
-  if (typeof body.assignedBy === "number" && Number.isFinite(body.assignedBy)) {
-    assignedBy = body.assignedBy;
-  } else if (
-    typeof body.assignedBy === "string" &&
-    body.assignedBy.trim() !== ""
-  ) {
-    assignedBy = Number.parseInt(body.assignedBy.trim(), 10);
-  } else {
-    res.status(400).json({ message: "assignedBy is required (number)" });
-    return;
-  }
-  if (!Number.isFinite(assignedBy)) {
-    res.status(400).json({ message: "assignedBy must be a number" });
-    return;
-  }
-
   try {
     const row = await rbacUserRolesService.createUserRole({
       userId,
-      roleId,
-      assignedBy,
+      roleId: parsed.data.roleId,
+      assignedBy: parsed.data.assignedBy,
     });
     res.status(201).json(row);
   } catch (err) {
