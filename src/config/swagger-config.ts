@@ -23,6 +23,15 @@ export function setupSwagger(app: Express): void {
         description: "REST API documentation. Routes are mounted under `/api/v1`.",
       },
       servers: [{ url: "/api/v1" }],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+          },
+        },
+      },
     },
     apis: routeDocGlobs(),
   });

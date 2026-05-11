@@ -9,7 +9,14 @@ import { setupSwagger } from "./swagger-config";
  * When you add a new middleware library, wire it here so `app.ts` stays short.
  */
 export function applyMiddlewares(app: Express): void {
-  app.use(cors());
+  const frontendOrigin =
+    process.env.FRONTEND_ORIGIN?.trim() || "http://localhost:5173";
+  app.use(
+    cors({
+      origin: frontendOrigin,
+      credentials: true,
+    }),
+  );
   app.use(express.json());
 
   setupSwagger(app);
