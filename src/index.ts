@@ -1,5 +1,7 @@
 import "dotenv/config";
 
+import "./modules/users/users.model";
+
 import { createApp } from "./app";
 import { sequelize } from "./config/sequelize-config";
 
