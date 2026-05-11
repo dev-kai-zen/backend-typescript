@@ -1,6 +1,7 @@
 import "dotenv/config";
 
 import "./modules/users/users.model";
+import "./modules/refresh-token/refresh-token.model";
 import "./modules/audit-logs/audit-logs.model";
 import "./modules/user-logs/user-logs.model";
 import "./modules/rbac/roles/roles.model";
