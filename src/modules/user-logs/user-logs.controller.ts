@@ -1,49 +1,40 @@
 import type { Request, Response } from "express";
 
+import { formatZodError } from "../../shared/validation/format-zod-error";
+import {
+  createUserLogBodySchema,
+  listUserLogsQuerySchema,
+} from "./user-logs.schemas";
 import * as userLogsService from "./user-logs.service";
+
+function firstQueryString(val: unknown): string | undefined {
+  if (typeof val === "string") {
+    return val;
+  }
+  if (Array.isArray(val) && typeof val[0] === "string") {
+    return val[0];
+  }
+  return undefined;
+}
 
 export async function listUserLogs(
   req: Request,
   res: Response,
 ): Promise<void> {
+  const parsed = listUserLogsQuerySchema.safeParse({
+    userId: firstQueryString(req.query.userId),
+    action: firstQueryString(req.query.action),
+    module: firstQueryString(req.query.module),
+    limit: firstQueryString(req.query.limit),
+    offset: firstQueryString(req.query.offset),
+  });
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
+    return;
+  }
+  const { limit, offset, ...filters } = parsed.data;
   try {
-    let userId: number | undefined;
-    if (typeof req.query.userId === "string" && req.query.userId !== "") {
-      const n = Number.parseInt(req.query.userId, 10);
-      if (Number.isFinite(n)) {
-        userId = n;
-      }
-    }
-
-    const action =
-      typeof req.query.action === "string" && req.query.action !== ""
-        ? req.query.action
-        : undefined;
-    const module =
-      typeof req.query.module === "string" && req.query.module !== ""
-        ? req.query.module
-        : undefined;
-
-    let limit: number | undefined;
-    if (typeof req.query.limit === "string") {
-      const n = Number.parseInt(req.query.limit, 10);
-      if (Number.isFinite(n) && n >= 0) {
-        limit = n;
-      }
-    }
-
-    let offset: number | undefined;
-    if (typeof req.query.offset === "string") {
-      const n = Number.parseInt(req.query.offset, 10);
-      if (Number.isFinite(n) && n >= 0) {
-        offset = n;
-      }
-    }
-
-    const logs = await userLogsService.listUserLogs(
-      { userId, action, module },
-      { limit, offset },
-    );
+    const logs = await userLogsService.listUserLogs(filters, { limit, offset });
     res.json({ data: logs });
   } catch (err) {
     console.error("listUserLogs:", err);
@@ -55,67 +46,27 @@ export async function createUserLog(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const body = req.body as Record<string, unknown>;
-  if (!body.action || typeof body.action !== "string") {
-    res.status(400).json({ message: "action is required" });
+  const parsed = createUserLogBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
     return;
   }
-
-  let userId: number | null = null;
-  if (body.userId !== undefined && body.userId !== null) {
-    if (typeof body.userId === "number" && Number.isFinite(body.userId)) {
-      userId = body.userId;
-    } else if (
-      typeof body.userId === "string" &&
-      body.userId.trim() !== ""
-    ) {
-      const n = Number.parseInt(body.userId.trim(), 10);
-      if (Number.isFinite(n)) {
-        userId = n;
-      } else {
-        res.status(400).json({ message: "userId must be a number" });
-        return;
-      }
-    } else {
-      res.status(400).json({ message: "userId must be a number or null" });
-      return;
-    }
-  }
-
-  let statusCode: number | null = null;
-  if (body.statusCode !== undefined && body.statusCode !== null) {
-    if (typeof body.statusCode === "number" && Number.isFinite(body.statusCode)) {
-      statusCode = body.statusCode;
-    } else {
-      res.status(400).json({ message: "statusCode must be a number" });
-      return;
-    }
-  }
-
   try {
     const log = await userLogsService.createUserLog({
-      userId,
-      action: body.action,
-      module: typeof body.module === "string" ? body.module : null,
-      description:
-        typeof body.description === "string" ? body.description : null,
-      method: typeof body.method === "string" ? body.method : null,
-      route: typeof body.route === "string" ? body.route : null,
-      statusCode,
-      ipAddress:
-        typeof body.ipAddress === "string" ? body.ipAddress : null,
-      userAgent:
-        typeof body.userAgent === "string" ? body.userAgent : null,
-      deviceType:
-        typeof body.deviceType === "string" ? body.deviceType : null,
-      browser: typeof body.browser === "string" ? body.browser : null,
-      os: typeof body.os === "string" ? body.os : null,
-      sessionId:
-        typeof body.sessionId === "string" ? body.sessionId : null,
-      metadata:
-        typeof body.metadata === "object" && body.metadata !== null
-          ? (body.metadata as Record<string, unknown>)
-          : null,
+      action: parsed.data.action,
+      userId: parsed.data.userId ?? null,
+      module: parsed.data.module ?? null,
+      description: parsed.data.description ?? null,
+      method: parsed.data.method ?? null,
+      route: parsed.data.route ?? null,
+      statusCode: parsed.data.statusCode ?? null,
+      ipAddress: parsed.data.ipAddress ?? null,
+      userAgent: parsed.data.userAgent ?? null,
+      deviceType: parsed.data.deviceType ?? null,
+      browser: parsed.data.browser ?? null,
+      os: parsed.data.os ?? null,
+      sessionId: parsed.data.sessionId ?? null,
+      metadata: parsed.data.metadata ?? null,
     });
     res.status(201).json(log);
   } catch (err) {
