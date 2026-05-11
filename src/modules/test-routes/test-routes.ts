@@ -7,7 +7,7 @@ import { Router } from "express";
 export const testRoutes = Router();
 
 testRoutes.get("/", (_req, res) => {
-  res.json({ message: "backend-typescript API" });
+  res.json({ message: "backend-typescript APIs" });
 });
 
 testRoutes.get("/health", (_req, res) => {

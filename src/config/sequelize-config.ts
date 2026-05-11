@@ -1,14 +1,5 @@
 import { Sequelize } from "sequelize";
 
-/**
- * Database connection lives in ONE place so you always know where to look.
- *
- * 1. Copy `.env.example` to `.env`
- * 2. Set `DATABASE_URL` (MySQL connection string)
- *
- * Later, when you add models, import `sequelize` here or in each model file
- * using `sequelize.define(...)` — see Sequelize docs for "Model definition".
- */
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {

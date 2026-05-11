@@ -8,5 +8,5 @@ import { v1ModulesRouter } from "./v1/modules-routes";
  * Example: test module is mounted at `/v1/test` (see `v1/modules-routes.ts`).
  */
 export function registerRoutes(app: Express): void {
-  app.use("/v1", v1ModulesRouter);
+  app.use("/api/v1", v1ModulesRouter);
 }
