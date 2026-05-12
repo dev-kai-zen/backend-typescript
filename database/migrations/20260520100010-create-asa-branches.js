@@ -1,29 +1,38 @@
 "use strict";
 
-/** @see src/modules/rbac/role-permissions/rbac-role-permissions.model.ts */
+/** @see src/modules/content-management/asa-branches/asa-branches.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "rbac_role_permissions",
+      "asa_branches",
       {
         id: {
           type: Sequelize.INTEGER.UNSIGNED,
           autoIncrement: true,
           primaryKey: true,
         },
-        role_id: {
+        branch_code: {
+          type: Sequelize.STRING(64),
+          allowNull: false,
+          unique: true,
+        },
+        branch_name: {
+          type: Sequelize.STRING(255),
+          allowNull: false,
+        },
+        asa_area_id: {
           type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
-          references: { model: "rbac_roles", key: "id" },
+          references: { model: "asa_areas", key: "id" },
           onDelete: "CASCADE",
           onUpdate: "CASCADE",
         },
-        permission_id: {
+        asa_branch_type_id: {
           type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
-          references: { model: "rbac_permissions", key: "id" },
-          onDelete: "CASCADE",
+          references: { model: "asa_branch_types", key: "id" },
+          onDelete: "RESTRICT",
           onUpdate: "CASCADE",
         },
         created_at: {
@@ -38,21 +47,16 @@ module.exports = {
             "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
           ),
         },
+        deleted_at: {
+          type: Sequelize.DATE(3),
+          allowNull: true,
+        },
       },
-      {
-        charset: "utf8mb4",
-        collate: "utf8mb4_unicode_ci",
-        indexes: [
-          {
-            unique: true,
-            fields: ["role_id", "permission_id"],
-          },
-        ],
-      },
+      { charset: "utf8mb4", collate: "utf8mb4_unicode_ci" },
     );
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable("rbac_role_permissions");
+    await queryInterface.dropTable("asa_branches");
   },
 };

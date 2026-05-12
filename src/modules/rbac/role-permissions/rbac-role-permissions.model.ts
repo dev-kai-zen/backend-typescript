@@ -12,10 +12,11 @@ export class RbacRolePermission extends Model<
   InferCreationAttributes<RbacRolePermission>
 > {
   declare id: CreationOptional<number>;
-  declare roleId: number;
-  declare permissionId: number;
-  declare readonly createdAt: CreationOptional<Date>;
-  declare readonly updatedAt: CreationOptional<Date>;
+  declare role_id: number;
+  declare permission_id: number;
+  declare readonly created_at: CreationOptional<Date>;
+  declare readonly updated_at: CreationOptional<Date>;
+  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 RbacRolePermission.init(
@@ -25,7 +26,7 @@ RbacRolePermission.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    roleId: {
+    role_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
@@ -35,7 +36,7 @@ RbacRolePermission.init(
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     },
-    permissionId: {
+    permission_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
@@ -45,13 +46,17 @@ RbacRolePermission.init(
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    updatedAt: {
+    updated_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
+    },
+    deleted_at: {
+      type: DataTypes.DATE(3),
+      allowNull: true,
     },
   },
   {
@@ -59,6 +64,10 @@ RbacRolePermission.init(
     tableName: "rbac_role_permissions",
     underscored: true,
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    paranoid: true,
     indexes: [
       {
         unique: true,

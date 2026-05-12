@@ -12,7 +12,7 @@ export async function listUserLogs(
 ): Promise<UserLog[]> {
   const where: WhereOptions<UserLog> = {};
   if (filters.userId !== undefined && Number.isFinite(filters.userId)) {
-    where.userId = filters.userId;
+    where.user_id = filters.userId;
   }
   if (filters.action !== undefined && filters.action !== "") {
     where.action = filters.action;
@@ -25,7 +25,7 @@ export async function listUserLogs(
     where,
     limit: options.limit,
     offset: options.offset,
-    order: [["createdAt", "DESC"]],
+    order: [["created_at", "DESC"]],
   });
 }
 
@@ -33,19 +33,19 @@ export async function createUserLog(
   input: CreateUserLogInput,
 ): Promise<UserLog> {
   return UserLog.create({
-    userId: input.userId ?? null,
+    user_id: input.userId ?? null,
     action: input.action,
     module: input.module ?? null,
     description: input.description ?? null,
     method: input.method ?? null,
     route: input.route ?? null,
-    statusCode: input.statusCode ?? null,
-    ipAddress: input.ipAddress ?? null,
-    userAgent: input.userAgent ?? null,
-    deviceType: input.deviceType ?? null,
+    status_code: input.statusCode ?? null,
+    ip_address: input.ipAddress ?? null,
+    user_agent: input.userAgent ?? null,
+    device_type: input.deviceType ?? null,
     browser: input.browser ?? null,
     os: input.os ?? null,
-    sessionId: input.sessionId ?? null,
+    session_id: input.sessionId ?? null,
     metadata: input.metadata ?? null,
   });
 }

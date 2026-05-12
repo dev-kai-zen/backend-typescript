@@ -65,6 +65,35 @@
  *         description: Created
  *       400:
  *         description: Validation error
+ *   put:
+ *     tags: [RBAC — Roles]
+ *     summary: Replace all permissions for role
+ *     description: Removes existing role-permission rows for this role, then inserts the given list. Send an empty permissionIds array to clear all.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [permissionIds]
+ *             properties:
+ *               permissionIds:
+ *                 type: array
+ *                 items:
+ *                   type: integer
+ *     responses:
+ *       200:
+ *         description: OK — returns the new link rows
+ *       400:
+ *         description: Validation or invalid permission id
+ *       404:
+ *         description: Role not found
  */
 
 /**

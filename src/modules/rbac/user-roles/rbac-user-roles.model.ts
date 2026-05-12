@@ -12,11 +12,12 @@ export class RbacUserRole extends Model<
   InferCreationAttributes<RbacUserRole>
 > {
   declare id: CreationOptional<number>;
-  declare userId: number;
-  declare roleId: number;
-  declare assignedBy: number;
-  declare readonly createdAt: CreationOptional<Date>;
-  declare readonly updatedAt: CreationOptional<Date>;
+  declare user_id: number;
+  declare role_id: number;
+  declare assigned_by: number;
+  declare readonly created_at: CreationOptional<Date>;
+  declare readonly updated_at: CreationOptional<Date>;
+  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 RbacUserRole.init(
@@ -26,7 +27,7 @@ RbacUserRole.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    userId: {
+    user_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
@@ -36,7 +37,7 @@ RbacUserRole.init(
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     },
-    roleId: {
+    role_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
@@ -46,7 +47,7 @@ RbacUserRole.init(
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     },
-    assignedBy: {
+    assigned_by: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
@@ -56,13 +57,17 @@ RbacUserRole.init(
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    updatedAt: {
+    updated_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
+    },
+    deleted_at: {
+      type: DataTypes.DATE(3),
+      allowNull: true,
     },
   },
   {
@@ -70,6 +75,10 @@ RbacUserRole.init(
     tableName: "rbac_user_roles",
     underscored: true,
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    paranoid: true,
     indexes: [
       {
         unique: true,

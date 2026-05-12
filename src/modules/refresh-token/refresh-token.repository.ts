@@ -11,11 +11,11 @@ export async function listRefreshTokens(
 ): Promise<RefreshToken[]> {
   const where: WhereOptions<RefreshToken> = {};
   if (filters.userId !== undefined && Number.isFinite(filters.userId)) {
-    where.userId = filters.userId;
+    where.user_id = filters.userId;
   }
   return RefreshToken.findAll({
     where,
-    order: [["createdAt", "DESC"]],
+    order: [["created_at", "DESC"]],
   });
 }
 
@@ -23,9 +23,9 @@ export async function createRefreshToken(
   input: CreateRefreshTokenInput,
 ): Promise<RefreshToken> {
   return RefreshToken.create({
-    userId: input.userId,
+    user_id: input.userId,
     token: input.token,
-    expiresAt: input.expiresAt,
+    expires_at: input.expiresAt,
   });
 }
 

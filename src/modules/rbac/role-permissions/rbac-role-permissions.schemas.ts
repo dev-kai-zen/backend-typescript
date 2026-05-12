@@ -12,3 +12,18 @@ export const createRolePermissionBodySchema = z
 export type CreateRolePermissionBody = z.infer<
   typeof createRolePermissionBodySchema
 >;
+
+export const setRolePermissionsBodySchema = z
+  .object({
+    permissionIds: z.array(
+      z.coerce
+        .number()
+        .int()
+        .positive({ message: "each permission id must be a positive integer" }),
+    ),
+  })
+  .strict();
+
+export type SetRolePermissionsBody = z.infer<
+  typeof setRolePermissionsBodySchema
+>;

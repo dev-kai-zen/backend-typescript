@@ -6,7 +6,7 @@ import type { CreateUserInput, ListUsersFilters } from "./users.types";
 export async function listUsers(filters: ListUsersFilters): Promise<User[]> {
   const where: WhereOptions<User> = {};
   if (filters.isActive !== undefined) {
-    where.isActive = filters.isActive;
+    where.is_active = filters.isActive;
   }
   return User.findAll({
     where,
@@ -17,11 +17,11 @@ export async function listUsers(filters: ListUsersFilters): Promise<User[]> {
 export async function createUser(data: CreateUserInput): Promise<User> {
   return User.create({
     email: data.email,
-    googleId: data.googleId ?? null,
-    fullName: data.fullName ?? null,
-    pictureUrl: data.pictureUrl ?? null,
-    isActive: data.isActive ?? true,
-    lastLoginAt: null,
+    google_id: data.googleId ?? null,
+    full_name: data.fullName ?? null,
+    picture_url: data.pictureUrl ?? null,
+    is_active: data.isActive ?? true,
+    last_login_at: null,
   });
 }
 
@@ -44,7 +44,33 @@ export async function updateUser(
   if (!user) {
     return null;
   }
-  await user.update(data);
+  const patch: Partial<{
+    email: string;
+    google_id: string | null;
+    full_name: string | null;
+    picture_url: string | null;
+    is_active: boolean;
+    last_login_at: Date | null;
+  }> = {};
+  if (data.email !== undefined) {
+    patch.email = data.email;
+  }
+  if (data.googleId !== undefined) {
+    patch.google_id = data.googleId;
+  }
+  if (data.fullName !== undefined) {
+    patch.full_name = data.fullName;
+  }
+  if (data.pictureUrl !== undefined) {
+    patch.picture_url = data.pictureUrl;
+  }
+  if (data.isActive !== undefined) {
+    patch.is_active = data.isActive;
+  }
+  if (data.lastLoginAt !== undefined) {
+    patch.last_login_at = data.lastLoginAt;
+  }
+  await user.update(patch);
   return user;
 }
 

@@ -7,7 +7,7 @@ export async function listAsaOperations(): Promise<AsaOperation[]> {
 export async function createAsaOperation(data: {
   operationName: string;
 }): Promise<AsaOperation> {
-  return AsaOperation.create({ operationName: data.operationName });
+  return AsaOperation.create({ operation_name: data.operationName });
 }
 
 export async function getAsaOperation(
@@ -24,7 +24,7 @@ export async function updateAsaOperation(
   if (!row) {
     return null;
   }
-  await row.update({ operationName: data.operationName });
+  await row.update({ operation_name: data.operationName });
   return row;
 }
 

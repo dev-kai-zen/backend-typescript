@@ -12,9 +12,10 @@ export class AsaBranchType extends Model<
   InferCreationAttributes<AsaBranchType>
 > {
   declare id: CreationOptional<number>;
-  declare typeName: string;
-  declare readonly createdAt: CreationOptional<Date>;
-  declare readonly updatedAt: CreationOptional<Date>;
+  declare type_name: string;
+  declare readonly created_at: CreationOptional<Date>;
+  declare readonly updated_at: CreationOptional<Date>;
+  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 AsaBranchType.init(
@@ -24,18 +25,22 @@ AsaBranchType.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    typeName: {
+    type_name: {
       type: DataTypes.STRING(255),
       allowNull: false,
       unique: true,
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    updatedAt: {
+    updated_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
+    },
+    deleted_at: {
+      type: DataTypes.DATE(3),
+      allowNull: true,
     },
   },
   {
@@ -43,5 +48,9 @@ AsaBranchType.init(
     tableName: "asa_branch_types",
     underscored: true,
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    paranoid: true,
   },
 );

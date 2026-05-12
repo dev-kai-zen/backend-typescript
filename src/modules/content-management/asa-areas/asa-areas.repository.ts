@@ -9,8 +9,8 @@ export async function createAsaArea(data: {
   asaRegionId: number;
 }): Promise<AsaArea> {
   return AsaArea.create({
-    areaName: data.areaName,
-    asaRegionId: data.asaRegionId,
+    area_name: data.areaName,
+    asa_region_id: data.asaRegionId,
   });
 }
 
@@ -27,8 +27,8 @@ export async function updateAsaArea(
     return null;
   }
   await row.update({
-    areaName: data.areaName,
-    asaRegionId: data.asaRegionId,
+    area_name: data.areaName,
+    asa_region_id: data.asaRegionId,
   });
   return row;
 }

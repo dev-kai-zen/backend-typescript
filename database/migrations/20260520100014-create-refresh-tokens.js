@@ -1,27 +1,32 @@
 "use strict";
 
-/** @see src/modules/content-management/asa-divisions/asa-divisions.model.ts */
+/** @see src/modules/refresh-token/refresh-token.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "asa_divisions",
+      "refresh_tokens",
       {
         id: {
           type: Sequelize.INTEGER.UNSIGNED,
           autoIncrement: true,
           primaryKey: true,
         },
-        division_name: {
-          type: Sequelize.STRING(255),
-          allowNull: false,
-        },
-        asa_operation_id: {
+        user_id: {
           type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
-          references: { model: "asa_operations", key: "id" },
+          references: { model: "users", key: "id" },
           onDelete: "CASCADE",
           onUpdate: "CASCADE",
+        },
+        token: {
+          type: Sequelize.STRING(512),
+          allowNull: false,
+          unique: true,
+        },
+        expires_at: {
+          type: Sequelize.DATE(3),
+          allowNull: false,
         },
         created_at: {
           type: Sequelize.DATE(3),
@@ -35,12 +40,20 @@ module.exports = {
             "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
           ),
         },
+        deleted_at: {
+          type: Sequelize.DATE(3),
+          allowNull: true,
+        },
       },
-      { charset: "utf8mb4", collate: "utf8mb4_unicode_ci" },
+      {
+        charset: "utf8mb4",
+        collate: "utf8mb4_unicode_ci",
+        indexes: [{ fields: ["user_id"] }],
+      },
     );
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable("asa_divisions");
+    await queryInterface.dropTable("refresh_tokens");
   },
 };

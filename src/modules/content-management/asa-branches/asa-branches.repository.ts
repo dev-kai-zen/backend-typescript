@@ -11,10 +11,10 @@ export async function createAsaBranch(data: {
   asaBranchTypeId: number;
 }): Promise<AsaBranch> {
   return AsaBranch.create({
-    branchCode: data.branchCode,
-    branchName: data.branchName,
-    asaAreaId: data.asaAreaId,
-    asaBranchTypeId: data.asaBranchTypeId,
+    branch_code: data.branchCode,
+    branch_name: data.branchName,
+    asa_area_id: data.asaAreaId,
+    asa_branch_type_id: data.asaBranchTypeId,
   });
 }
 
@@ -36,10 +36,10 @@ export async function updateAsaBranch(
     return null;
   }
   await row.update({
-    branchCode: data.branchCode,
-    branchName: data.branchName,
-    asaAreaId: data.asaAreaId,
-    asaBranchTypeId: data.asaBranchTypeId,
+    branch_code: data.branchCode,
+    branch_name: data.branchName,
+    asa_area_id: data.asaAreaId,
+    asa_branch_type_id: data.asaBranchTypeId,
   });
   return row;
 }

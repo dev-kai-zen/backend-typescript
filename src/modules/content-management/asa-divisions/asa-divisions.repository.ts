@@ -9,8 +9,8 @@ export async function createAsaDivision(data: {
   asaOperationId: number;
 }): Promise<AsaDivision> {
   return AsaDivision.create({
-    divisionName: data.divisionName,
-    asaOperationId: data.asaOperationId,
+    division_name: data.divisionName,
+    asa_operation_id: data.asaOperationId,
   });
 }
 
@@ -27,8 +27,8 @@ export async function updateAsaDivision(
     return null;
   }
   await row.update({
-    divisionName: data.divisionName,
-    asaOperationId: data.asaOperationId,
+    division_name: data.divisionName,
+    asa_operation_id: data.asaOperationId,
   });
   return row;
 }

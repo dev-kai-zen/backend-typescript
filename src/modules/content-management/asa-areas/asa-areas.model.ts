@@ -12,10 +12,11 @@ export class AsaArea extends Model<
   InferCreationAttributes<AsaArea>
 > {
   declare id: CreationOptional<number>;
-  declare areaName: string;
-  declare asaRegionId: number;
-  declare readonly createdAt: CreationOptional<Date>;
-  declare readonly updatedAt: CreationOptional<Date>;
+  declare area_name: string;
+  declare asa_region_id: number;
+  declare readonly created_at: CreationOptional<Date>;
+  declare readonly updated_at: CreationOptional<Date>;
+  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 AsaArea.init(
@@ -25,11 +26,11 @@ AsaArea.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    areaName: {
+    area_name: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    asaRegionId: {
+    asa_region_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
@@ -39,13 +40,17 @@ AsaArea.init(
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    updatedAt: {
+    updated_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
+    },
+    deleted_at: {
+      type: DataTypes.DATE(3),
+      allowNull: true,
     },
   },
   {
@@ -53,5 +58,9 @@ AsaArea.init(
     tableName: "asa_areas",
     underscored: true,
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    paranoid: true,
   },
 );

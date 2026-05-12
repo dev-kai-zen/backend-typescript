@@ -13,11 +13,12 @@ export class RefreshToken extends Model<
   InferCreationAttributes<RefreshToken>
 > {
   declare id: CreationOptional<number>;
-  declare userId: number;
+  declare user_id: number;
   declare token: string;
-  declare expiresAt: Date;
-  declare readonly createdAt: CreationOptional<Date>;
-  declare readonly updatedAt: CreationOptional<Date>;
+  declare expires_at: Date;
+  declare readonly created_at: CreationOptional<Date>;
+  declare readonly updated_at: CreationOptional<Date>;
+  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 RefreshToken.init(
@@ -27,7 +28,7 @@ RefreshToken.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    userId: {
+    user_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
       references: {
@@ -42,17 +43,21 @@ RefreshToken.init(
       allowNull: false,
       unique: true,
     },
-    expiresAt: {
+    expires_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    updatedAt: {
+    updated_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
+    },
+    deleted_at: {
+      type: DataTypes.DATE(3),
+      allowNull: true,
     },
   },
   {
@@ -60,8 +65,12 @@ RefreshToken.init(
     tableName: "refresh_tokens",
     underscored: true,
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    paranoid: true,
     indexes: [{ fields: ["user_id"] }],
   },
 );
 
-RefreshToken.belongsTo(User, { foreignKey: "userId", as: "user" });
+RefreshToken.belongsTo(User, { foreignKey: "user_id", as: "user" });

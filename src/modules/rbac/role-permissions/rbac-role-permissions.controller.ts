@@ -1,8 +1,11 @@
 import type { Request, Response } from "express";
-import { UniqueConstraintError } from "sequelize";
+import { ForeignKeyConstraintError, UniqueConstraintError } from "sequelize";
 
 import { formatZodError } from "../../../shared/validation/format-zod-error";
-import { createRolePermissionBodySchema } from "./rbac-role-permissions.schemas";
+import {
+  createRolePermissionBodySchema,
+  setRolePermissionsBodySchema,
+} from "./rbac-role-permissions.schemas";
 import * as rbacRolePermissionsService from "./rbac-role-permissions.service";
 
 export async function listRolePermissions(
@@ -22,6 +25,48 @@ export async function listRolePermissions(
   } catch (err) {
     console.error("listRolePermissions:", err);
     res.status(500).json({ message: "Failed to list role permissions" });
+  }
+}
+
+export async function setRolePermissions(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const raw = req.params.id;
+  const roleId =
+    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
+  if (!Number.isFinite(roleId)) {
+    res.status(400).json({ message: "Invalid role id" });
+    return;
+  }
+  const parsed = setRolePermissionsBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ message: formatZodError(parsed.error) });
+    return;
+  }
+  try {
+    const rows = await rbacRolePermissionsService.setRolePermissions(
+      roleId,
+      parsed.data.permissionIds,
+    );
+    if (!rows) {
+      res.status(404).json({ message: "Role not found" });
+      return;
+    }
+    res.json({ data: rows });
+  } catch (err) {
+    console.error("setRolePermissions:", err);
+    if (err instanceof ForeignKeyConstraintError) {
+      res.status(400).json({
+        message: "One or more permission ids do not exist",
+      });
+      return;
+    }
+    if (err instanceof UniqueConstraintError) {
+      res.status(409).json({ message: "Duplicate permission id in request" });
+      return;
+    }
+    res.status(500).json({ message: "Failed to set role permissions" });
   }
 }
 

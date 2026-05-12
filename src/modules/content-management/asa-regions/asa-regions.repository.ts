@@ -9,8 +9,8 @@ export async function createAsaRegion(data: {
   asaDivisionId: number;
 }): Promise<AsaRegion> {
   return AsaRegion.create({
-    regionName: data.regionName,
-    asaDivisionId: data.asaDivisionId,
+    region_name: data.regionName,
+    asa_division_id: data.asaDivisionId,
   });
 }
 
@@ -27,8 +27,8 @@ export async function updateAsaRegion(
     return null;
   }
   await row.update({
-    regionName: data.regionName,
-    asaDivisionId: data.asaDivisionId,
+    region_name: data.regionName,
+    asa_division_id: data.asaDivisionId,
   });
   return row;
 }

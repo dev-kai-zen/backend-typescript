@@ -1,26 +1,31 @@
 "use strict";
 
-/** @see src/modules/content-management/asa-areas/asa-areas.model.ts */
+/** @see src/modules/rbac/permissions/rbac-permissions.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "asa_areas",
+      "rbac_permissions",
       {
         id: {
           type: Sequelize.INTEGER.UNSIGNED,
           autoIncrement: true,
           primaryKey: true,
         },
-        area_name: {
-          type: Sequelize.STRING(255),
+        permission_code: {
+          type: Sequelize.STRING(128),
           allowNull: false,
+          unique: true,
         },
-        asa_region_id: {
+        permission_description: {
+          type: Sequelize.STRING(512),
+          allowNull: true,
+        },
+        group_id: {
           type: Sequelize.INTEGER.UNSIGNED,
-          allowNull: false,
-          references: { model: "asa_regions", key: "id" },
-          onDelete: "CASCADE",
+          allowNull: true,
+          references: { model: "rbac_groups", key: "id" },
+          onDelete: "SET NULL",
           onUpdate: "CASCADE",
         },
         created_at: {
@@ -35,12 +40,16 @@ module.exports = {
             "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
           ),
         },
+        deleted_at: {
+          type: Sequelize.DATE(3),
+          allowNull: true,
+        },
       },
       { charset: "utf8mb4", collate: "utf8mb4_unicode_ci" },
     );
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable("asa_areas");
+    await queryInterface.dropTable("rbac_permissions");
   },
 };

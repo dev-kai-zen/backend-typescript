@@ -1,32 +1,27 @@
 "use strict";
 
-/** @see src/modules/refresh-token/refresh-token.model.ts */
+/** @see src/modules/content-management/asa-areas/asa-areas.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "refresh_tokens",
+      "asa_areas",
       {
         id: {
           type: Sequelize.INTEGER.UNSIGNED,
           autoIncrement: true,
           primaryKey: true,
         },
-        user_id: {
+        area_name: {
+          type: Sequelize.STRING(255),
+          allowNull: false,
+        },
+        asa_region_id: {
           type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
-          references: { model: "users", key: "id" },
+          references: { model: "asa_regions", key: "id" },
           onDelete: "CASCADE",
           onUpdate: "CASCADE",
-        },
-        token: {
-          type: Sequelize.STRING(512),
-          allowNull: false,
-          unique: true,
-        },
-        expires_at: {
-          type: Sequelize.DATE(3),
-          allowNull: false,
         },
         created_at: {
           type: Sequelize.DATE(3),
@@ -40,16 +35,16 @@ module.exports = {
             "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
           ),
         },
+        deleted_at: {
+          type: Sequelize.DATE(3),
+          allowNull: true,
+        },
       },
-      {
-        charset: "utf8mb4",
-        collate: "utf8mb4_unicode_ci",
-        indexes: [{ fields: ["user_id"] }],
-      },
+      { charset: "utf8mb4", collate: "utf8mb4_unicode_ci" },
     );
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable("refresh_tokens");
+    await queryInterface.dropTable("asa_areas");
   },
 };

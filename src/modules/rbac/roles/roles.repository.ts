@@ -9,8 +9,8 @@ export async function createRole(data: {
   roleDescription: string | null;
 }): Promise<Role> {
   return Role.create({
-    roleName: data.roleName,
-    roleDescription: data.roleDescription,
+    role_name: data.roleName,
+    role_description: data.roleDescription,
   });
 }
 
@@ -29,7 +29,17 @@ export async function updateRole(
   if (!role) {
     return null;
   }
-  await role.update(data);
+  const patch: Partial<{
+    role_name: string;
+    role_description: string | null;
+  }> = {};
+  if (data.roleName !== undefined) {
+    patch.role_name = data.roleName;
+  }
+  if (data.roleDescription !== undefined) {
+    patch.role_description = data.roleDescription;
+  }
+  await role.update(patch);
   return role;
 }
 

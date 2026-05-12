@@ -12,9 +12,10 @@ export class AsaOperation extends Model<
   InferCreationAttributes<AsaOperation>
 > {
   declare id: CreationOptional<number>;
-  declare operationName: string;
-  declare readonly createdAt: CreationOptional<Date>;
-  declare readonly updatedAt: CreationOptional<Date>;
+  declare operation_name: string;
+  declare readonly created_at: CreationOptional<Date>;
+  declare readonly updated_at: CreationOptional<Date>;
+  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 AsaOperation.init(
@@ -24,17 +25,21 @@ AsaOperation.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    operationName: {
+    operation_name: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    updatedAt: {
+    updated_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
+    },
+    deleted_at: {
+      type: DataTypes.DATE(3),
+      allowNull: true,
     },
   },
   {
@@ -42,5 +47,9 @@ AsaOperation.init(
     tableName: "asa_operations",
     underscored: true,
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    paranoid: true,
   },
 );

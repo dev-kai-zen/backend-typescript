@@ -12,11 +12,12 @@ export class RbacPermission extends Model<
   InferCreationAttributes<RbacPermission>
 > {
   declare id: CreationOptional<number>;
-  declare permissionCode: string;
-  declare permissionDescription: CreationOptional<string | null>;
-  declare groupId: CreationOptional<number | null>;
-  declare readonly createdAt: CreationOptional<Date>;
-  declare readonly updatedAt: CreationOptional<Date>;
+  declare permission_code: string;
+  declare permission_description: CreationOptional<string | null>;
+  declare group_id: CreationOptional<number | null>;
+  declare readonly created_at: CreationOptional<Date>;
+  declare readonly updated_at: CreationOptional<Date>;
+  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 RbacPermission.init(
@@ -26,16 +27,16 @@ RbacPermission.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    permissionCode: {
+    permission_code: {
       type: DataTypes.STRING(128),
       allowNull: false,
       unique: true,
     },
-    permissionDescription: {
+    permission_description: {
       type: DataTypes.STRING(512),
       allowNull: true,
     },
-    groupId: {
+    group_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       references: {
@@ -45,13 +46,17 @@ RbacPermission.init(
       onDelete: "SET NULL",
       onUpdate: "CASCADE",
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    updatedAt: {
+    updated_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
+    },
+    deleted_at: {
+      type: DataTypes.DATE(3),
+      allowNull: true,
     },
   },
   {
@@ -59,5 +64,9 @@ RbacPermission.init(
     tableName: "rbac_permissions",
     underscored: true,
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    paranoid: true,
   },
 );

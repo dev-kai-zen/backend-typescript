@@ -27,7 +27,7 @@ export async function authenticateJwt(
   }
 
   const user = await User.findByPk(userId);
-  if (!user || !user.isActive) {
+  if (!user || !user.is_active) {
     res.status(401).json({ success: false, message: "Unauthorized" });
     return;
   }

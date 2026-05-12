@@ -7,7 +7,7 @@ export async function listGroups(): Promise<RbacGroup[]> {
 export async function createGroup(data: {
   groupName: string;
 }): Promise<RbacGroup> {
-  return RbacGroup.create({ groupName: data.groupName });
+  return RbacGroup.create({ group_name: data.groupName });
 }
 
 export async function getGroup(id: number): Promise<RbacGroup | null> {
@@ -22,7 +22,7 @@ export async function updateGroup(
   if (!group) {
     return null;
   }
-  await group.update({ groupName: data.groupName });
+  await group.update({ group_name: data.groupName });
   return group;
 }
 

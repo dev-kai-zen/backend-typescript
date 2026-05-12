@@ -7,7 +7,7 @@ export async function listAsaBranchTypes(): Promise<AsaBranchType[]> {
 export async function createAsaBranchType(data: {
   typeName: string;
 }): Promise<AsaBranchType> {
-  return AsaBranchType.create({ typeName: data.typeName });
+  return AsaBranchType.create({ type_name: data.typeName });
 }
 
 export async function getAsaBranchType(
@@ -24,7 +24,7 @@ export async function updateAsaBranchType(
   if (!row) {
     return null;
   }
-  await row.update({ typeName: data.typeName });
+  await row.update({ type_name: data.typeName });
   return row;
 }
 

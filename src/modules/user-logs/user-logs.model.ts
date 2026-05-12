@@ -12,21 +12,23 @@ export class UserLog extends Model<
   InferCreationAttributes<UserLog>
 > {
   declare id: CreationOptional<number>;
-  declare userId: CreationOptional<number | null>;
+  declare user_id: CreationOptional<number | null>;
   declare action: string;
   declare module: CreationOptional<string | null>;
   declare description: CreationOptional<string | null>;
   declare method: CreationOptional<string | null>;
   declare route: CreationOptional<string | null>;
-  declare statusCode: CreationOptional<number | null>;
-  declare ipAddress: CreationOptional<string | null>;
-  declare userAgent: CreationOptional<string | null>;
-  declare deviceType: CreationOptional<string | null>;
+  declare status_code: CreationOptional<number | null>;
+  declare ip_address: CreationOptional<string | null>;
+  declare user_agent: CreationOptional<string | null>;
+  declare device_type: CreationOptional<string | null>;
   declare browser: CreationOptional<string | null>;
   declare os: CreationOptional<string | null>;
-  declare sessionId: CreationOptional<string | null>;
+  declare session_id: CreationOptional<string | null>;
   declare metadata: CreationOptional<Record<string, unknown> | null>;
-  declare readonly createdAt: CreationOptional<Date>;
+  declare readonly created_at: CreationOptional<Date>;
+  declare readonly updated_at: CreationOptional<Date>;
+  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 UserLog.init(
@@ -36,7 +38,7 @@ UserLog.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    userId: {
+    user_id: {
       type: DataTypes.BIGINT,
       allowNull: true,
     },
@@ -60,19 +62,19 @@ UserLog.init(
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    statusCode: {
+    status_code: {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
-    ipAddress: {
+    ip_address: {
       type: DataTypes.STRING(45),
       allowNull: true,
     },
-    userAgent: {
+    user_agent: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    deviceType: {
+    device_type: {
       type: DataTypes.STRING(50),
       allowNull: true,
     },
@@ -84,7 +86,7 @@ UserLog.init(
       type: DataTypes.STRING(100),
       allowNull: true,
     },
-    sessionId: {
+    session_id: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
@@ -92,9 +94,17 @@ UserLog.init(
       type: DataTypes.JSON,
       allowNull: true,
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE,
       allowNull: false,
+    },
+    updated_at: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    deleted_at: {
+      type: DataTypes.DATE(3),
+      allowNull: true,
     },
   },
   {
@@ -102,7 +112,10 @@ UserLog.init(
     tableName: "user_logs",
     underscored: true,
     timestamps: true,
-    updatedAt: false,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    paranoid: true,
     indexes: [
       { name: "idx_user_id", fields: ["user_id"] },
       { name: "idx_action", fields: ["action"] },

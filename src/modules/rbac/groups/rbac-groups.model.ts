@@ -12,9 +12,10 @@ export class RbacGroup extends Model<
   InferCreationAttributes<RbacGroup>
 > {
   declare id: CreationOptional<number>;
-  declare groupName: string;
-  declare readonly createdAt: CreationOptional<Date>;
-  declare readonly updatedAt: CreationOptional<Date>;
+  declare group_name: string;
+  declare readonly created_at: CreationOptional<Date>;
+  declare readonly updated_at: CreationOptional<Date>;
+  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 RbacGroup.init(
@@ -24,18 +25,22 @@ RbacGroup.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    groupName: {
+    group_name: {
       type: DataTypes.STRING(128),
       allowNull: false,
       unique: true,
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    updatedAt: {
+    updated_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
+    },
+    deleted_at: {
+      type: DataTypes.DATE(3),
+      allowNull: true,
     },
   },
   {
@@ -43,5 +48,9 @@ RbacGroup.init(
     tableName: "rbac_groups",
     underscored: true,
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    paranoid: true,
   },
 );

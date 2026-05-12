@@ -1,23 +1,16 @@
 "use strict";
 
-/** @see src/modules/rbac/user-roles/rbac-user-roles.model.ts */
+/** @see src/modules/rbac/role-permissions/rbac-role-permissions.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "rbac_user_roles",
+      "rbac_role_permissions",
       {
         id: {
           type: Sequelize.INTEGER.UNSIGNED,
           autoIncrement: true,
           primaryKey: true,
-        },
-        user_id: {
-          type: Sequelize.INTEGER.UNSIGNED,
-          allowNull: false,
-          references: { model: "users", key: "id" },
-          onDelete: "CASCADE",
-          onUpdate: "CASCADE",
         },
         role_id: {
           type: Sequelize.INTEGER.UNSIGNED,
@@ -26,10 +19,10 @@ module.exports = {
           onDelete: "CASCADE",
           onUpdate: "CASCADE",
         },
-        assigned_by: {
+        permission_id: {
           type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
-          references: { model: "users", key: "id" },
+          references: { model: "rbac_permissions", key: "id" },
           onDelete: "CASCADE",
           onUpdate: "CASCADE",
         },
@@ -45,6 +38,10 @@ module.exports = {
             "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
           ),
         },
+        deleted_at: {
+          type: Sequelize.DATE(3),
+          allowNull: true,
+        },
       },
       {
         charset: "utf8mb4",
@@ -52,7 +49,7 @@ module.exports = {
         indexes: [
           {
             unique: true,
-            fields: ["user_id", "role_id"],
+            fields: ["role_id", "permission_id"],
           },
         ],
       },
@@ -60,6 +57,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable("rbac_user_roles");
+    await queryInterface.dropTable("rbac_role_permissions");
   },
 };

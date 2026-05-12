@@ -12,14 +12,15 @@ export class User extends Model<
   InferCreationAttributes<User>
 > {
   declare id: CreationOptional<number>;
-  declare googleId: CreationOptional<string | null>;
+  declare google_id: CreationOptional<string | null>;
   declare email: string;
-  declare fullName: CreationOptional<string | null>;
-  declare pictureUrl: CreationOptional<string | null>;
-  declare isActive: CreationOptional<boolean>;
-  declare lastLoginAt: CreationOptional<Date | null>;
-  declare readonly createdAt: CreationOptional<Date>;
-  declare readonly updatedAt: CreationOptional<Date>;
+  declare full_name: CreationOptional<string | null>;
+  declare picture_url: CreationOptional<string | null>;
+  declare is_active: CreationOptional<boolean>;
+  declare last_login_at: CreationOptional<Date | null>;
+  declare readonly created_at: CreationOptional<Date>;
+  declare readonly updated_at: CreationOptional<Date>;
+  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 User.init(
@@ -29,7 +30,7 @@ User.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    googleId: {
+    google_id: {
       type: DataTypes.STRING(255),
       allowNull: true,
       unique: true,
@@ -39,30 +40,34 @@ User.init(
       allowNull: false,
       unique: true,
     },
-    fullName: {
+    full_name: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    pictureUrl: {
+    picture_url: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
-    isActive: {
+    is_active: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
     },
-    lastLoginAt: {
+    last_login_at: {
       type: DataTypes.DATE(3),
       allowNull: true,
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    updatedAt: {
+    updated_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
+    },
+    deleted_at: {
+      type: DataTypes.DATE(3),
+      allowNull: true,
     },
   },
   {
@@ -70,5 +75,9 @@ User.init(
     tableName: "users",
     underscored: true,
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    paranoid: true,
   },
 );

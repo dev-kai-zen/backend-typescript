@@ -7,7 +7,7 @@ export async function listPermissions(filters: {
 }): Promise<RbacPermission[]> {
   const where: WhereOptions<RbacPermission> = {};
   if (filters.groupId !== undefined) {
-    where.groupId = filters.groupId;
+    where.group_id = filters.groupId;
   }
   return RbacPermission.findAll({ where, order: [["id", "ASC"]] });
 }
@@ -18,9 +18,9 @@ export async function createPermission(data: {
   groupId: number | null;
 }): Promise<RbacPermission> {
   return RbacPermission.create({
-    permissionCode: data.permissionCode,
-    permissionDescription: data.permissionDescription,
-    groupId: data.groupId,
+    permission_code: data.permissionCode,
+    permission_description: data.permissionDescription,
+    group_id: data.groupId,
   });
 }
 
@@ -42,7 +42,21 @@ export async function updatePermission(
   if (!row) {
     return null;
   }
-  await row.update(data);
+  const patch: Partial<{
+    permission_code: string;
+    permission_description: string | null;
+    group_id: number | null;
+  }> = {};
+  if (data.permissionCode !== undefined) {
+    patch.permission_code = data.permissionCode;
+  }
+  if (data.permissionDescription !== undefined) {
+    patch.permission_description = data.permissionDescription;
+  }
+  if (data.groupId !== undefined) {
+    patch.group_id = data.groupId;
+  }
+  await row.update(patch);
   return row;
 }
 

@@ -1,21 +1,25 @@
 "use strict";
 
-/** @see src/modules/rbac/groups/rbac-groups.model.ts */
+/** @see src/modules/rbac/roles/roles.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "rbac_groups",
+      "rbac_roles",
       {
         id: {
           type: Sequelize.INTEGER.UNSIGNED,
           autoIncrement: true,
           primaryKey: true,
         },
-        group_name: {
+        role_name: {
           type: Sequelize.STRING(128),
           allowNull: false,
           unique: true,
+        },
+        role_description: {
+          type: Sequelize.STRING(512),
+          allowNull: true,
         },
         created_at: {
           type: Sequelize.DATE(3),
@@ -29,12 +33,16 @@ module.exports = {
             "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
           ),
         },
+        deleted_at: {
+          type: Sequelize.DATE(3),
+          allowNull: true,
+        },
       },
       { charset: "utf8mb4", collate: "utf8mb4_unicode_ci" },
     );
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable("rbac_groups");
+    await queryInterface.dropTable("rbac_roles");
   },
 };

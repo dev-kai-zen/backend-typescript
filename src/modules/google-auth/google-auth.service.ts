@@ -39,7 +39,7 @@ export async function loginWithGoogleIdToken(googleToken: string): Promise<{
   const fullName = payload.name ?? null;
   const pictureUrl = payload.picture ?? null;
 
-  let user = await User.findOne({ where: { googleId } });
+  let user = await User.findOne({ where: { google_id: googleId } });
   if (!user) {
     user = await User.findOne({ where: { email } });
   }
@@ -54,9 +54,9 @@ export async function loginWithGoogleIdToken(googleToken: string): Promise<{
     });
   } else {
     await usersService.updateUser(user.id, {
-      googleId: user.googleId ?? googleId,
-      fullName: fullName ?? user.fullName,
-      pictureUrl: pictureUrl ?? user.pictureUrl,
+      googleId: user.google_id ?? googleId,
+      fullName: fullName ?? user.full_name,
+      pictureUrl: pictureUrl ?? user.picture_url,
       lastLoginAt: new Date(),
     });
     const reloaded = await User.findByPk(user.id);
@@ -68,7 +68,7 @@ export async function loginWithGoogleIdToken(googleToken: string): Promise<{
     user = reloaded;
   }
 
-  if (!user.isActive) {
+  if (!user.is_active) {
     const err = new Error("Account disabled");
     (err as Error & { statusCode?: number }).statusCode = 403;
     throw err;
@@ -93,7 +93,7 @@ export async function refreshAccessToken(
   }
 
   const user = await User.findByPk(userId);
-  if (!user || !user.isActive) {
+  if (!user || !user.is_active) {
     const err = new Error("Unauthorized");
     (err as Error & { statusCode?: number }).statusCode = 401;
     throw err;
@@ -112,7 +112,7 @@ export async function getMe(userId: number): Promise<{
     (err as Error & { statusCode?: number }).statusCode = 404;
     throw err;
   }
-  if (!user.isActive) {
+  if (!user.is_active) {
     const err = new Error("Account disabled");
     (err as Error & { statusCode?: number }).statusCode = 403;
     throw err;

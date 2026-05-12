@@ -1,43 +1,27 @@
 "use strict";
 
-/** @see src/modules/users/users.model.ts */
+/** @see src/modules/content-management/asa-divisions/asa-divisions.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "users",
+      "asa_divisions",
       {
         id: {
           type: Sequelize.INTEGER.UNSIGNED,
           autoIncrement: true,
           primaryKey: true,
         },
-        google_id: {
-          type: Sequelize.STRING(255),
-          allowNull: true,
-          unique: true,
-        },
-        email: {
+        division_name: {
           type: Sequelize.STRING(255),
           allowNull: false,
-          unique: true,
         },
-        full_name: {
-          type: Sequelize.STRING(255),
-          allowNull: true,
-        },
-        picture_url: {
-          type: Sequelize.STRING(255),
-          allowNull: true,
-        },
-        is_active: {
-          type: Sequelize.BOOLEAN,
+        asa_operation_id: {
+          type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
-          defaultValue: true,
-        },
-        last_login_at: {
-          type: Sequelize.DATE(3),
-          allowNull: true,
+          references: { model: "asa_operations", key: "id" },
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE",
         },
         created_at: {
           type: Sequelize.DATE(3),
@@ -51,12 +35,16 @@ module.exports = {
             "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
           ),
         },
+        deleted_at: {
+          type: Sequelize.DATE(3),
+          allowNull: true,
+        },
       },
       { charset: "utf8mb4", collate: "utf8mb4_unicode_ci" },
     );
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable("users");
+    await queryInterface.dropTable("asa_divisions");
   },
 };

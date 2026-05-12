@@ -12,10 +12,11 @@ export class Role extends Model<
   InferCreationAttributes<Role>
 > {
   declare id: CreationOptional<number>;
-  declare roleName: string;
-  declare roleDescription: CreationOptional<string | null>;
-  declare readonly createdAt: CreationOptional<Date>;
-  declare readonly updatedAt: CreationOptional<Date>;
+  declare role_name: string;
+  declare role_description: CreationOptional<string | null>;
+  declare readonly created_at: CreationOptional<Date>;
+  declare readonly updated_at: CreationOptional<Date>;
+  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 Role.init(
@@ -25,22 +26,26 @@ Role.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    roleName: {
+    role_name: {
       type: DataTypes.STRING(128),
       allowNull: false,
       unique: true,
     },
-    roleDescription: {
+    role_description: {
       type: DataTypes.STRING(512),
       allowNull: true,
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    updatedAt: {
+    updated_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
+    },
+    deleted_at: {
+      type: DataTypes.DATE(3),
+      allowNull: true,
     },
   },
   {
@@ -48,5 +53,9 @@ Role.init(
     tableName: "rbac_roles",
     underscored: true,
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    paranoid: true,
   },
 );
