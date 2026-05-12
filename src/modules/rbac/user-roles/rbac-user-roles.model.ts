@@ -7,6 +7,8 @@ import {
 } from "sequelize";
 import { sequelize } from "../../../config/sequelize-config";
 
+import { RbacRole } from "../roles/rbac-roles.model";
+
 export class RbacUserRole extends Model<
   InferAttributes<RbacUserRole>,
   InferCreationAttributes<RbacUserRole>
@@ -72,3 +74,5 @@ RbacUserRole.init(
     ],
   },
 );
+
+RbacUserRole.belongsTo(RbacRole, { foreignKey: "role_id", as: "role" });

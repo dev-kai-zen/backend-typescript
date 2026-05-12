@@ -6,6 +6,7 @@ import {
   Model,
 } from "sequelize";
 import { sequelize } from "../../../config/sequelize-config";
+import { RbacGroup } from "../groups/rbac-groups.model";
 
 export class RbacPermission extends Model<
   InferAttributes<RbacPermission>,
@@ -55,3 +56,5 @@ RbacPermission.init(
     paranoid: true,
   },
 );
+
+RbacPermission.belongsTo(RbacGroup, { foreignKey: "group_id", as: "group" });

@@ -1,5 +1,9 @@
 import { sequelize } from "../../../config/sequelize-config";
 import { RbacRolePermission } from "./rbac-role-permissions.model";
+import { RolePermissionsWithPermissionDetails } from "./rbac-role-permissions.types";
+import { RbacPermission } from "../permissions/rbac-permissions.model";
+
+import { Op } from "sequelize";
 
 /** Hard-deletes existing links for the role, then inserts the new set (see model unique + paranoid). */
 export async function setRolePermissionsForRole(
@@ -58,4 +62,20 @@ export async function deleteRolePermission(
     where: { role_id: roleId, permission_id: permissionId },
   });
   return deleted > 0;
+}
+
+
+export async function getRolePermissionsByRoleIds(roleIds: number[]): Promise<RolePermissionsWithPermissionDetails[]> {
+  const rows = await  RbacRolePermission.findAll({
+    where: { role_id: { [Op.in]: roleIds } },
+    include: [
+      {
+        model: RbacPermission,
+        as: "permission",
+        attributes: ["permission_code"],
+      },
+    ],
+  });
+
+  return rows.map((row) => row.toJSON() as RolePermissionsWithPermissionDetails);
 }

@@ -16,6 +16,8 @@ export function getJwtSecret(): string {
 export type AccessTokenPayload = {
   sub: number;
   typ: "access";
+  roles: string[];
+  permissions: string[];
 };
 
 export type RefreshTokenPayload = {
@@ -23,9 +25,9 @@ export type RefreshTokenPayload = {
   typ: "refresh";
 };
 
-export function signAccessToken(userId: number): string {
+export function signAccessToken(userId: number, roles: string[], permissions: string[]): string {
   const secret = getJwtSecret();
-  const payload: AccessTokenPayload = { sub: userId, typ: "access" };
+  const payload: AccessTokenPayload = { sub: userId, typ: "access", roles, permissions };
   const signOptions: SignOptions = { expiresIn: ACCESS_EXPIRES_IN };
   return jwt.sign(payload, secret, signOptions);
 }
@@ -37,16 +39,20 @@ export function signRefreshToken(userId: number): string {
   return jwt.sign(payload, secret, signOptions);
 }
 
+function asStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.filter((item): item is string => typeof item === "string");
+}
+
 /**
- * Validates the token and returns the user id from `sub`.
+ * Validates the access token and returns the signed payload (user id, roles, permissions).
  * Throws if the token is invalid, expired, or `sub` is not a finite number.
  */
-export function verifyAccessToken(token: string): number {
+export function verifyAccessTokenPayload(token: string): AccessTokenPayload {
   const secret = getJwtSecret();
-  const decoded = jwt.verify(token, secret) as {
-    sub?: unknown;
-    typ?: unknown;
-  };
+  const decoded = jwt.verify(token, secret) as Record<string, unknown>;
   if (decoded.typ !== "access") {
     throw new Error("Invalid access token");
   }
@@ -59,7 +65,20 @@ export function verifyAccessToken(token: string): number {
   if (!Number.isFinite(id)) {
     throw new Error("Invalid token subject");
   }
-  return id;
+  return {
+    sub: id,
+    typ: "access",
+    roles: asStringArray(decoded.roles),
+    permissions: asStringArray(decoded.permissions),
+  };
+}
+
+/**
+ * Validates the token and returns the user id from `sub`.
+ * Throws if the token is invalid, expired, or `sub` is not a finite number.
+ */
+export function verifyAccessToken(token: string): number {
+  return verifyAccessTokenPayload(token).sub;
 }
 
 /**

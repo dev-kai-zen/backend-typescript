@@ -5,6 +5,10 @@ declare global {
     interface Request {
       /** Set by `authenticateJwt` after a valid Bearer token. */
       authUser?: User;
+      /** Role names from the access JWT (via `authenticateJwt`). */
+      roles?: string[];
+      /** Permission codes from the access JWT (via `authenticateJwt`). */
+      permissions?: string[];
     }
   }
 }

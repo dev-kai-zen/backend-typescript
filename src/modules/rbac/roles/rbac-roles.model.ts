@@ -7,16 +7,16 @@ import {
 } from "sequelize";
 import { sequelize } from "../../../config/sequelize-config";
 
-export class Role extends Model<
-  InferAttributes<Role>,
-  InferCreationAttributes<Role>
+export class RbacRole extends Model<
+  InferAttributes<RbacRole>,
+  InferCreationAttributes<RbacRole>
 > {
   declare id: CreationOptional<number>;
   declare role_name: string;
   declare role_description: CreationOptional<string | null>;
 }
 
-Role.init(
+RbacRole.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -44,3 +44,6 @@ Role.init(
     paranoid: true,
   },
 );
+
+/** Value alias matching `Role` usages in rbac repositories/services. */
+export { RbacRole as Role };

@@ -1,6 +1,7 @@
 import * as rolesRepository from "../roles/rbac-roles.repository";
 import * as rbacRolePermissionsRepository from "./rbac-role-permissions.repository";
 import type { RbacRolePermission } from "./rbac-role-permissions.model";
+import type { RolePermissionsWithPermissionDetails } from "./rbac-role-permissions.types";
 
 export async function setRolePermissions(
   roleId: number,
@@ -41,4 +42,8 @@ export async function deleteRolePermission(
     roleId,
     permissionId,
   );
+}
+
+export async function getRolePermissionsByRoleIds(roleIds: number[]): Promise<RolePermissionsWithPermissionDetails[]> {
+  return rbacRolePermissionsRepository.getRolePermissionsByRoleIds(roleIds);
 }

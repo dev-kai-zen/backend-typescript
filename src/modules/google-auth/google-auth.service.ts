@@ -3,11 +3,13 @@ import { OAuth2Client } from "google-auth-library";
 import { env } from "../../config/env-config";
 import { User } from "../users/users.model";
 import * as usersService from "../users/users.service";
+import * as rbacUserRoleService from "../rbac/user-roles/rbac-user-roles.service";
+import * as rbacRolePermissionsService from "../rbac/role-permissions/rbac-role-permissions.service";
 import {
   signAccessToken,
   signRefreshToken,
   verifyRefreshToken,
-} from "../../shared/utils/jwt-token";
+} from "../../shared/services/jwt-service";
 
 let oauthClient: OAuth2Client | null = null;
 function getGoogleOAuthClient(): OAuth2Client {
@@ -15,6 +17,28 @@ function getGoogleOAuthClient(): OAuth2Client {
     oauthClient = new OAuth2Client(env.googleClientId);
   }
   return oauthClient;
+}
+
+/** Same derivation as `routes-guard` `principalFromDb`: dedupe role ids / permission codes. */
+async function rolesAndPermissionsForJwt(userId: number): Promise<{
+  roles: string[];
+  permissions: string[];
+}> {
+  const userRoles =
+    await rbacUserRoleService.getUserRolesWithDescriptions(userId);
+  const roles = [...new Set(userRoles.map((r) => r.role.role_name))];
+  const roleIds = [...new Set(userRoles.map((r) => r.role_id))];
+  if (roleIds.length === 0) {
+    return { roles, permissions: [] };
+  }
+  const links =
+    await rbacRolePermissionsService.getRolePermissionsByRoleIds(roleIds);
+  const permissions = [
+    ...new Set(
+      links.map((row) => row.permission.permission_code),
+    ),
+  ];
+  return { roles, permissions };
 }
 
 export async function loginWithGoogleIdToken(googleToken: string): Promise<{
@@ -74,7 +98,9 @@ export async function loginWithGoogleIdToken(googleToken: string): Promise<{
     throw err;
   }
 
-  const accessToken = signAccessToken(user.id);
+  const { roles, permissions } = await rolesAndPermissionsForJwt(user.id);
+
+  const accessToken = signAccessToken(user.id, roles, permissions);
   const refreshToken = signRefreshToken(user.id);
 
   return { accessToken, refreshToken, user };
@@ -99,7 +125,8 @@ export async function refreshAccessToken(
     throw err;
   }
 
-  return signAccessToken(user.id);
+  const { roles, permissions } = await rolesAndPermissionsForJwt(user.id);
+  return signAccessToken(user.id, roles, permissions);
 }
 
 export async function getMe(userId: number): Promise<{

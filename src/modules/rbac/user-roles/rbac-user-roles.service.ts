@@ -1,5 +1,6 @@
 import * as rbacUserRolesRepository from "./rbac-user-roles.repository";
 import type { RbacUserRole } from "./rbac-user-roles.model";
+import type { UserRolesWithRoleDetails } from "./rbac-user-roles.types";
 
 export async function listUserRoles(userId: number): Promise<RbacUserRole[]> {
   return rbacUserRolesRepository.listUserRoles(userId);
@@ -34,4 +35,11 @@ export async function deleteUserRole(
   roleId: number,
 ): Promise<boolean> {
   return rbacUserRolesRepository.deleteUserRole(userId, roleId);
+}
+
+
+export async function getUserRolesWithDescriptions(
+  userId: number,
+): Promise<UserRolesWithRoleDetails[]> {
+  return rbacUserRolesRepository.getUserRolesWithDescriptions(userId);
 }

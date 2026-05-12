@@ -1,6 +1,9 @@
 import { sequelize } from "../../../config/sequelize-config";
 import { User } from "../../users/users.model";
 import { RbacUserRole } from "./rbac-user-roles.model";
+import { RbacRole } from "../roles/rbac-roles.model";
+import type { UserRolesWithRoleDetails } from "./rbac-user-roles.types";
+
 
 /** Hard-delete existing links for the user, then insert the new set (unique + paranoid; same idea as role-permissions). */
 export async function setUserRolesForUser(
@@ -60,4 +63,24 @@ export async function deleteUserRole(
     where: { user_id: userId, role_id: roleId },
   });
   return deleted > 0;
+}
+
+/** User-role links with nested `role` as plain JSON (matches `Model#toJSON()`). */
+export async function getUserRolesWithDescriptions(
+  userId: number,
+): Promise<UserRolesWithRoleDetails[]> {
+  const rows = await RbacUserRole.findAll({
+    where: { user_id: userId },
+    order: [["id", "ASC"]],
+    include: [
+      {
+        model: RbacRole,
+        as: "role",
+        attributes: ["role_name", "role_description"],
+        required: true,
+      },
+    ],
+  });
+
+  return rows.map((row) => row.toJSON() as UserRolesWithRoleDetails);
 }

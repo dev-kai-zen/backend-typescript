@@ -39,10 +39,12 @@ export async function login(req: Request, res: Response): Promise<void> {
 
     const { accessToken, refreshToken, user } =
       await loginWithGoogleIdToken(googleToken);
+
     res.cookie(REFRESH_COOKIE_NAME, refreshToken, {
       ...refreshCookieBase(),
       maxAge: REFRESH_COOKIE_MAX_MS,
     });
+
     res.json({
       success: true,
       message: "Login successful",

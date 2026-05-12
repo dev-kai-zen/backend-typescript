@@ -6,6 +6,8 @@ import {
   Model,
 } from "sequelize";
 import { sequelize } from "../../../config/sequelize-config";
+import { RbacRole } from "../roles/rbac-roles.model";
+import { RbacPermission } from "../permissions/rbac-permissions.model";
 
 export class RbacRolePermission extends Model<
   InferAttributes<RbacRolePermission>,
@@ -63,3 +65,16 @@ RbacRolePermission.init(
     ],
   },
 );
+
+RbacRolePermission.belongsTo(RbacRole, { foreignKey: "role_id", as: "role" });
+RbacRolePermission.belongsTo(RbacPermission, {
+  foreignKey: "permission_id",
+  as: "permission",
+});
+
+RbacPermission.hasMany(RbacRolePermission, {
+  foreignKey: "permission_id",
+  as: "role_permissions",
+});
+
+
