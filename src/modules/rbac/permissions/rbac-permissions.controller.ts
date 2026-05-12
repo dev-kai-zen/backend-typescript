@@ -13,16 +13,18 @@ export async function listPermissions(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const groupIdRaw = req.query.groupId;
-  const groupIdSlice =
-    typeof groupIdRaw === "string"
-      ? groupIdRaw
-      : Array.isArray(groupIdRaw) &&
-          groupIdRaw.length > 0 &&
-          typeof groupIdRaw[0] === "string"
-        ? groupIdRaw[0]
+  const categoryIdRaw = req.query.categoryId;
+  const categoryIdSlice =
+    typeof categoryIdRaw === "string"
+      ? categoryIdRaw
+      : Array.isArray(categoryIdRaw) &&
+          categoryIdRaw.length > 0 &&
+          typeof categoryIdRaw[0] === "string"
+        ? categoryIdRaw[0]
         : undefined;
-  const parsed = listPermissionsQuerySchema.safeParse({ groupId: groupIdSlice });
+  const parsed = listPermissionsQuerySchema.safeParse({
+    categoryId: categoryIdSlice,
+  });
   if (!parsed.success) {
     res.status(400).json({ message: formatZodError(parsed.error) });
     return;
@@ -49,7 +51,7 @@ export async function createPermission(
     const row = await rbacPermissionsService.createPermission({
       permissionCode: parsed.data.permissionCode,
       permissionDescription: parsed.data.permissionDescription ?? null,
-      groupId: parsed.data.groupId ?? null,
+      categoryId: parsed.data.categoryId ?? null,
     });
     res.status(201).json(row);
   } catch (err) {

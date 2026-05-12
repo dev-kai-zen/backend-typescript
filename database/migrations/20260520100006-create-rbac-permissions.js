@@ -21,12 +21,17 @@ module.exports = {
           type: Sequelize.STRING(512),
           allowNull: true,
         },
-        group_id: {
+        category_id: {
           type: Sequelize.INTEGER.UNSIGNED,
           allowNull: true,
-          references: { model: "rbac_groups", key: "id" },
+          references: { model: "rbac_categories", key: "id" },
           onDelete: "SET NULL",
           onUpdate: "CASCADE",
+        },
+        is_active: {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          defaultValue: true,
         },
         created_at: {
           type: Sequelize.DATE(3),

@@ -10,7 +10,7 @@ import { RefreshToken } from "../../modules/refresh-token/refresh-token.model";
 import { AuditLog } from "../../modules/audit-logs/audit-logs.model";
 import { UserLog } from "../../modules/user-logs/user-logs.model";
 import { Role } from "../../modules/rbac/roles/rbac-roles.model";
-import { RbacGroup } from "../../modules/rbac/groups/rbac-groups.model";
+import { RbacCategory } from "../../modules/rbac/categories/rbac-categories.model";
 import { RbacPermission } from "../../modules/rbac/permissions/rbac-permissions.model";
 import { RbacRolePermission } from "../../modules/rbac/role-permissions/rbac-role-permissions.model";
 import { RbacUserRole } from "../../modules/rbac/user-roles/rbac-user-roles.model";
@@ -27,7 +27,7 @@ export const models = {
   AuditLog,
   UserLog,
   Role,
-  RbacGroup,
+  RbacCategory,
   RbacPermission,
   RbacRolePermission,
   RbacUserRole,

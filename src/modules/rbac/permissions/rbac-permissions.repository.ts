@@ -3,11 +3,11 @@ import type { WhereOptions } from "sequelize";
 import { RbacPermission } from "./rbac-permissions.model";
 
 export async function listPermissions(filters: {
-  groupId?: number;
+  categoryId?: number;
 }): Promise<RbacPermission[]> {
   const where: WhereOptions<RbacPermission> = {};
-  if (filters.groupId !== undefined) {
-    where.group_id = filters.groupId;
+  if (filters.categoryId !== undefined) {
+    where.category_id = filters.categoryId;
   }
   return RbacPermission.findAll({ where, order: [["id", "ASC"]] });
 }
@@ -15,12 +15,12 @@ export async function listPermissions(filters: {
 export async function createPermission(data: {
   permissionCode: string;
   permissionDescription: string | null;
-  groupId: number | null;
+  categoryId: number | null;
 }): Promise<RbacPermission> {
   return RbacPermission.create({
     permission_code: data.permissionCode,
     permission_description: data.permissionDescription,
-    group_id: data.groupId,
+    category_id: data.categoryId,
   });
 }
 
@@ -35,7 +35,7 @@ export async function updatePermission(
   data: {
     permissionCode?: string;
     permissionDescription?: string | null;
-    groupId?: number | null;
+    categoryId?: number | null;
   },
 ): Promise<RbacPermission | null> {
   const row = await RbacPermission.findByPk(id);
@@ -45,7 +45,7 @@ export async function updatePermission(
   const patch: Partial<{
     permission_code: string;
     permission_description: string | null;
-    group_id: number | null;
+    category_id: number | null;
   }> = {};
   if (data.permissionCode !== undefined) {
     patch.permission_code = data.permissionCode;
@@ -53,8 +53,8 @@ export async function updatePermission(
   if (data.permissionDescription !== undefined) {
     patch.permission_description = data.permissionDescription;
   }
-  if (data.groupId !== undefined) {
-    patch.group_id = data.groupId;
+  if (data.categoryId !== undefined) {
+    patch.category_id = data.categoryId;
   }
   await row.update(patch);
   return row;

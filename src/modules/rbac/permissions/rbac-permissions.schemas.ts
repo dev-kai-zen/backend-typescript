@@ -5,26 +5,30 @@ const nullableString = z.union([z.string(), z.null()]);
 /** Query: optional filter; invalid or empty string behaves like omitted (matches previous controller behavior). */
 export const listPermissionsQuerySchema = z
   .object({
-    groupId: z.union([z.string(), z.undefined()]).optional(),
+    categoryId: z.union([z.string(), z.undefined()]).optional(),
   })
   .strict()
-  .transform(({ groupId }) => {
-    if (typeof groupId !== "string" || groupId.trim() === "") {
-      return { groupId: undefined as number | undefined };
+  .transform(({ categoryId }) => {
+    if (typeof categoryId !== "string" || categoryId.trim() === "") {
+      return { categoryId: undefined as number | undefined };
     }
-    const n = Number.parseInt(groupId.trim(), 10);
+    const n = Number.parseInt(categoryId.trim(), 10);
     return {
-      groupId: Number.isFinite(n) ? n : undefined,
+      categoryId: Number.isFinite(n) ? n : undefined,
     };
   });
 
-export type ListPermissionsQuery = z.infer<typeof listPermissionsQuerySchema>;
+export type ListPermissionsQuery = z.infer<
+  typeof listPermissionsQuerySchema
+>;
 
 export const createPermissionBodySchema = z
   .object({
     permissionCode: z.string().min(1, "permissionCode is required"),
     permissionDescription: nullableString.optional(),
-    groupId: z.union([z.coerce.number().int().nonnegative(), z.null()]).optional(),
+    categoryId: z
+      .union([z.coerce.number().int().nonnegative(), z.null()])
+      .optional(),
   })
   .strict();
 
@@ -34,7 +38,7 @@ export const updatePermissionBodySchema = z
   .object({
     permissionCode: z.string().min(1),
     permissionDescription: nullableString,
-    groupId: z.union([z.coerce.number().int().nonnegative(), z.null()]),
+    categoryId: z.union([z.coerce.number().int().nonnegative(), z.null()]),
   })
   .partial()
   .strict()

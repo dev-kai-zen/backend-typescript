@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { rbacGroupsRoutes } from "./groups/rbac-groups.routes";
+import { rbacCategoriesRoutes } from "./categories/rbac-categories.routes";
 import { rbacPermissionsRoutes } from "./permissions/rbac-permissions.routes";
 import { rbacRolePermissionsRoutes } from "./role-permissions/rbac-role-permissions.routes";
 import { rbacRolesRoutes } from "./roles/rbac-roles.routes";
@@ -8,7 +8,7 @@ import { rbacUserRolesRoutes } from "./user-roles/rbac-user-roles.routes";
 
 export const rbacRoutes = Router();
 
-rbacRoutes.use("/groups", rbacGroupsRoutes);
+rbacRoutes.use("/categories", rbacCategoriesRoutes);
 rbacRoutes.use("/roles", rbacRolePermissionsRoutes);
 rbacRoutes.use("/roles", rbacRolesRoutes);
 rbacRoutes.use("/permissions", rbacPermissionsRoutes);

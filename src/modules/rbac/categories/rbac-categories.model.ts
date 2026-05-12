@@ -7,22 +7,22 @@ import {
 } from "sequelize";
 import { sequelize } from "../../../config/sequelize-config";
 
-export class RbacGroup extends Model<
-  InferAttributes<RbacGroup>,
-  InferCreationAttributes<RbacGroup>
+export class RbacCategory extends Model<
+  InferAttributes<RbacCategory>,
+  InferCreationAttributes<RbacCategory>
 > {
   declare id: CreationOptional<number>;
-  declare group_name: string;
+  declare category_name: string;
 }
 
-RbacGroup.init(
+RbacCategory.init(
   {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
       autoIncrement: true,
       primaryKey: true,
     },
-    group_name: {
+    category_name: {
       type: DataTypes.STRING(128),
       allowNull: false,
       unique: true,
@@ -30,7 +30,7 @@ RbacGroup.init(
   },
   {
     sequelize,
-    tableName: "rbac_groups",
+    tableName: "rbac_categories",
     underscored: true,
     timestamps: true,
     createdAt: "created_at",

@@ -14,6 +14,7 @@ export class RbacRole extends Model<
   declare id: CreationOptional<number>;
   declare role_name: string;
   declare role_description: CreationOptional<string | null>;
+  declare is_active: CreationOptional<boolean>;
 }
 
 RbacRole.init(
@@ -31,6 +32,11 @@ RbacRole.init(
     role_description: {
       type: DataTypes.STRING(512),
       allowNull: true,
+    },
+    is_active: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
   },
   {

@@ -2,7 +2,7 @@ import * as rbacPermissionsRepository from "./rbac-permissions.repository";
 import type { RbacPermission } from "./rbac-permissions.model";
 
 export async function listPermissions(filters: {
-  groupId?: number;
+  categoryId?: number;
 }): Promise<RbacPermission[]> {
   return rbacPermissionsRepository.listPermissions(filters);
 }
@@ -10,7 +10,7 @@ export async function listPermissions(filters: {
 export async function createPermission(data: {
   permissionCode: string;
   permissionDescription?: string | null;
-  groupId?: number | null;
+  categoryId?: number | null;
 }): Promise<RbacPermission> {
   if (!data.permissionCode || data.permissionCode.trim() === "") {
     throw new Error("permissionCode is required");
@@ -18,7 +18,7 @@ export async function createPermission(data: {
   return rbacPermissionsRepository.createPermission({
     permissionCode: data.permissionCode.trim(),
     permissionDescription: data.permissionDescription ?? null,
-    groupId: data.groupId ?? null,
+    categoryId: data.categoryId ?? null,
   });
 }
 
@@ -33,7 +33,7 @@ export async function updatePermission(
   data: {
     permissionCode?: string;
     permissionDescription?: string | null;
-    groupId?: number | null;
+    categoryId?: number | null;
   },
 ): Promise<RbacPermission | null> {
   if (
@@ -46,7 +46,7 @@ export async function updatePermission(
   const patch: {
     permissionCode?: string;
     permissionDescription?: string | null;
-    groupId?: number | null;
+    categoryId?: number | null;
   } = {};
   if (data.permissionCode !== undefined) {
     patch.permissionCode = data.permissionCode.trim();
@@ -54,8 +54,8 @@ export async function updatePermission(
   if (data.permissionDescription !== undefined) {
     patch.permissionDescription = data.permissionDescription;
   }
-  if (data.groupId !== undefined) {
-    patch.groupId = data.groupId;
+  if (data.categoryId !== undefined) {
+    patch.categoryId = data.categoryId;
   }
   if (Object.keys(patch).length === 0) {
     throw new Error("No fields to update");

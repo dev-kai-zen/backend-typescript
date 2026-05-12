@@ -6,7 +6,7 @@ import {
   Model,
 } from "sequelize";
 import { sequelize } from "../../../config/sequelize-config";
-import { RbacGroup } from "../groups/rbac-groups.model";
+import { RbacCategory } from "../categories/rbac-categories.model";
 
 export class RbacPermission extends Model<
   InferAttributes<RbacPermission>,
@@ -15,7 +15,8 @@ export class RbacPermission extends Model<
   declare id: CreationOptional<number>;
   declare permission_code: string;
   declare permission_description: CreationOptional<string | null>;
-  declare group_id: CreationOptional<number | null>;
+  declare category_id: CreationOptional<number | null>;
+  declare is_active: CreationOptional<boolean>;
 }
 
 RbacPermission.init(
@@ -34,15 +35,20 @@ RbacPermission.init(
       type: DataTypes.STRING(512),
       allowNull: true,
     },
-    group_id: {
+    category_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       references: {
-        model: "rbac_groups",
+        model: "rbac_categories",
         key: "id",
       },
       onDelete: "SET NULL",
       onUpdate: "CASCADE",
+    },
+    is_active: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
   },
   {
@@ -57,4 +63,7 @@ RbacPermission.init(
   },
 );
 
-RbacPermission.belongsTo(RbacGroup, { foreignKey: "group_id", as: "group" });
+RbacPermission.belongsTo(RbacCategory, {
+  foreignKey: "category_id",
+  as: "category",
+});

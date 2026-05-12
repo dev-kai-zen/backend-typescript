@@ -1,14 +1,14 @@
 /**
- * OpenAPI fragments for `rbac-groups.routes.ts`.
+ * OpenAPI fragments for `rbac-categories.routes.ts`.
  * Consumed by swagger-jsdoc via `config/swagger-config.ts` (`apis` glob); not imported at runtime.
  */
 
 /**
  * @openapi
- * /rbac/groups:
+ * /rbac/categories:
  *   get:
- *     tags: [RBAC — Groups]
- *     summary: List groups
+ *     tags: [RBAC — Categories]
+ *     summary: List categories
  *     responses:
  *       200:
  *         description: OK
@@ -24,19 +24,19 @@
  *                     properties:
  *                       id:
  *                         type: integer
- *                       groupName:
+ *                       category_name:
  *                         type: string
- *                       createdAt:
+ *                       created_at:
  *                         type: string
  *                         format: date-time
- *                       updatedAt:
+ *                       updated_at:
  *                         type: string
  *                         format: date-time
  *       500:
  *         description: Server error
  *   post:
- *     tags: [RBAC — Groups]
- *     summary: Create group
+ *     tags: [RBAC — Categories]
+ *     summary: Create category
  *     requestBody:
  *       required: true
  *       content:
@@ -45,13 +45,13 @@
  *             type: object
  *             additionalProperties: false
  *             required:
- *               - groupName
+ *               - categoryName
  *             properties:
- *               groupName:
+ *               categoryName:
  *                 type: string
  *                 minLength: 1
  *                 maxLength: 128
- *                 description: Unique display name for the group
+ *                 description: Unique display name for the category
  *     responses:
  *       201:
  *         description: Created
@@ -62,28 +62,28 @@
  *               properties:
  *                 id:
  *                   type: integer
- *                 groupName:
+ *                 category_name:
  *                   type: string
- *                 createdAt:
+ *                 created_at:
  *                   type: string
  *                   format: date-time
- *                 updatedAt:
+ *                 updated_at:
  *                   type: string
  *                   format: date-time
  *       400:
  *         description: Validation error
  *       409:
- *         description: groupName already exists
+ *         description: categoryName already exists
  *       500:
  *         description: Server error
  */
 
 /**
  * @openapi
- * /rbac/groups/{id}:
+ * /rbac/categories/{id}:
  *   get:
- *     tags: [RBAC — Groups]
- *     summary: Get group
+ *     tags: [RBAC — Categories]
+ *     summary: Get category
  *     parameters:
  *       - in: path
  *         name: id
@@ -101,12 +101,12 @@
  *               properties:
  *                 id:
  *                   type: integer
- *                 groupName:
+ *                 category_name:
  *                   type: string
- *                 createdAt:
+ *                 created_at:
  *                   type: string
  *                   format: date-time
- *                 updatedAt:
+ *                 updated_at:
  *                   type: string
  *                   format: date-time
  *       400:
@@ -116,8 +116,8 @@
  *       500:
  *         description: Server error
  *   patch:
- *     tags: [RBAC — Groups]
- *     summary: Update group
+ *     tags: [RBAC — Categories]
+ *     summary: Update category
  *     parameters:
  *       - in: path
  *         name: id
@@ -133,13 +133,13 @@
  *             type: object
  *             additionalProperties: false
  *             required:
- *               - groupName
+ *               - categoryName
  *             properties:
- *               groupName:
+ *               categoryName:
  *                 type: string
  *                 minLength: 1
  *                 maxLength: 128
- *                 description: New display name for the group
+ *                 description: New display name for the category
  *     responses:
  *       200:
  *         description: OK
@@ -150,12 +150,12 @@
  *               properties:
  *                 id:
  *                   type: integer
- *                 groupName:
+ *                 category_name:
  *                   type: string
- *                 createdAt:
+ *                 created_at:
  *                   type: string
  *                   format: date-time
- *                 updatedAt:
+ *                 updated_at:
  *                   type: string
  *                   format: date-time
  *       400:
@@ -163,12 +163,12 @@
  *       404:
  *         description: Not found
  *       409:
- *         description: groupName already exists
+ *         description: categoryName already exists
  *       500:
  *         description: Server error
  *   delete:
- *     tags: [RBAC — Groups]
- *     summary: Delete group
+ *     tags: [RBAC — Categories]
+ *     summary: Delete category
  *     parameters:
  *       - in: path
  *         name: id

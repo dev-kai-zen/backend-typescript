@@ -1,18 +1,18 @@
 "use strict";
 
-/** @see src/modules/rbac/groups/rbac-groups.model.ts */
+/** @see src/modules/rbac/categories/rbac-categories.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "rbac_groups",
+      "rbac_categories",
       {
         id: {
           type: Sequelize.INTEGER.UNSIGNED,
           autoIncrement: true,
           primaryKey: true,
         },
-        group_name: {
+        category_name: {
           type: Sequelize.STRING(128),
           allowNull: false,
           unique: true,
@@ -39,6 +39,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable("rbac_groups");
+    await queryInterface.dropTable("rbac_categories");
   },
 };
