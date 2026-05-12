@@ -13,9 +13,6 @@ export class AsaOperation extends Model<
 > {
   declare id: CreationOptional<number>;
   declare operation_name: string;
-  declare readonly created_at: CreationOptional<Date>;
-  declare readonly updated_at: CreationOptional<Date>;
-  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 AsaOperation.init(
@@ -28,18 +25,6 @@ AsaOperation.init(
     operation_name: {
       type: DataTypes.STRING(255),
       allowNull: false,
-    },
-    created_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    updated_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    deleted_at: {
-      type: DataTypes.DATE(3),
-      allowNull: true,
     },
   },
   {

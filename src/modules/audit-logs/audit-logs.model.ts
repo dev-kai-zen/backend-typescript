@@ -24,9 +24,6 @@ export class AuditLog extends Model<
   declare user_agent: CreationOptional<string | null>;
   /** Business event time (distinct from `created_at` when logs are backfilled or delayed). */
   declare timestamp: Date;
-  declare readonly created_at: CreationOptional<Date>;
-  declare readonly updated_at: CreationOptional<Date>;
-  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 AuditLog.init(
@@ -81,18 +78,6 @@ AuditLog.init(
     timestamp: {
       type: DataTypes.DATE(3),
       allowNull: false,
-    },
-    created_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    updated_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    deleted_at: {
-      type: DataTypes.DATE(3),
-      allowNull: true,
     },
   },
   {

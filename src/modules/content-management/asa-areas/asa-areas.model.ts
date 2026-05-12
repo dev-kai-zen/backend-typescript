@@ -14,9 +14,6 @@ export class AsaArea extends Model<
   declare id: CreationOptional<number>;
   declare area_name: string;
   declare asa_region_id: number;
-  declare readonly created_at: CreationOptional<Date>;
-  declare readonly updated_at: CreationOptional<Date>;
-  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 AsaArea.init(
@@ -39,18 +36,6 @@ AsaArea.init(
       },
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
-    },
-    created_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    updated_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    deleted_at: {
-      type: DataTypes.DATE(3),
-      allowNull: true,
     },
   },
   {

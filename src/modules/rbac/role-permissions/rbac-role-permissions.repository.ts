@@ -7,11 +7,17 @@ export async function setRolePermissionsForRole(
   permissionIds: number[],
 ): Promise<RbacRolePermission[]> {
   return sequelize.transaction(async (transaction) => {
-    await RbacRolePermission.destroy({
+    const existing = await RbacRolePermission.findAll({
       where: { role_id: roleId },
-      force: true,
       transaction,
     });
+    if (existing.length > 0) {
+      await RbacRolePermission.destroy({
+        where: { role_id: roleId },
+        force: true,
+        transaction,
+      });
+    }
     if (permissionIds.length === 0) {
       return [];
     }

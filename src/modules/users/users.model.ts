@@ -18,9 +18,6 @@ export class User extends Model<
   declare picture_url: CreationOptional<string | null>;
   declare is_active: CreationOptional<boolean>;
   declare last_login_at: CreationOptional<Date | null>;
-  declare readonly created_at: CreationOptional<Date>;
-  declare readonly updated_at: CreationOptional<Date>;
-  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 User.init(
@@ -54,18 +51,6 @@ User.init(
       defaultValue: true,
     },
     last_login_at: {
-      type: DataTypes.DATE(3),
-      allowNull: true,
-    },
-    created_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    updated_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    deleted_at: {
       type: DataTypes.DATE(3),
       allowNull: true,
     },

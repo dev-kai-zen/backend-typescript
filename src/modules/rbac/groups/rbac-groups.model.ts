@@ -13,9 +13,6 @@ export class RbacGroup extends Model<
 > {
   declare id: CreationOptional<number>;
   declare group_name: string;
-  declare readonly created_at: CreationOptional<Date>;
-  declare readonly updated_at: CreationOptional<Date>;
-  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 RbacGroup.init(
@@ -29,18 +26,6 @@ RbacGroup.init(
       type: DataTypes.STRING(128),
       allowNull: false,
       unique: true,
-    },
-    created_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    updated_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    deleted_at: {
-      type: DataTypes.DATE(3),
-      allowNull: true,
     },
   },
   {

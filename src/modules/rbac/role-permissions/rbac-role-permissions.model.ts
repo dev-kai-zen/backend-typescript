@@ -14,9 +14,6 @@ export class RbacRolePermission extends Model<
   declare id: CreationOptional<number>;
   declare role_id: number;
   declare permission_id: number;
-  declare readonly created_at: CreationOptional<Date>;
-  declare readonly updated_at: CreationOptional<Date>;
-  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 RbacRolePermission.init(
@@ -46,26 +43,16 @@ RbacRolePermission.init(
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
     },
-    created_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    updated_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    deleted_at: {
-      type: DataTypes.DATE(3),
-      allowNull: true,
-    },
   },
   {
     sequelize,
     tableName: "rbac_role_permissions",
     underscored: true,
+    /** Adds `created_at` / `updated_at` (do not duplicate them in `attributes` — fixes `bulkCreate` timestamp injection). */
     timestamps: true,
     createdAt: "created_at",
     updatedAt: "updated_at",
+    /** Adds `deleted_at` and enables soft delete. */
     deletedAt: "deleted_at",
     paranoid: true,
     indexes: [

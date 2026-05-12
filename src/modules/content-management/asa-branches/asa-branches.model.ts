@@ -16,9 +16,6 @@ export class AsaBranch extends Model<
   declare branch_name: string;
   declare asa_area_id: number;
   declare asa_branch_type_id: number;
-  declare readonly created_at: CreationOptional<Date>;
-  declare readonly updated_at: CreationOptional<Date>;
-  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 AsaBranch.init(
@@ -56,18 +53,6 @@ AsaBranch.init(
       },
       onDelete: "RESTRICT",
       onUpdate: "CASCADE",
-    },
-    created_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    updated_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    deleted_at: {
-      type: DataTypes.DATE(3),
-      allowNull: true,
     },
   },
   {

@@ -26,9 +26,6 @@ export class UserLog extends Model<
   declare os: CreationOptional<string | null>;
   declare session_id: CreationOptional<string | null>;
   declare metadata: CreationOptional<Record<string, unknown> | null>;
-  declare readonly created_at: CreationOptional<Date>;
-  declare readonly updated_at: CreationOptional<Date>;
-  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 UserLog.init(
@@ -92,18 +89,6 @@ UserLog.init(
     },
     metadata: {
       type: DataTypes.JSON,
-      allowNull: true,
-    },
-    created_at: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    updated_at: {
-      type: DataTypes.DATE,
-      allowNull: false,
-    },
-    deleted_at: {
-      type: DataTypes.DATE(3),
       allowNull: true,
     },
   },

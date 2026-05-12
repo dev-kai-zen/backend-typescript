@@ -16,9 +16,6 @@ export class RefreshToken extends Model<
   declare user_id: number;
   declare token: string;
   declare expires_at: Date;
-  declare readonly created_at: CreationOptional<Date>;
-  declare readonly updated_at: CreationOptional<Date>;
-  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 RefreshToken.init(
@@ -46,18 +43,6 @@ RefreshToken.init(
     expires_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
-    },
-    created_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    updated_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    deleted_at: {
-      type: DataTypes.DATE(3),
-      allowNull: true,
     },
   },
   {

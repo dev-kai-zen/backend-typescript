@@ -14,9 +14,6 @@ export class Role extends Model<
   declare id: CreationOptional<number>;
   declare role_name: string;
   declare role_description: CreationOptional<string | null>;
-  declare readonly created_at: CreationOptional<Date>;
-  declare readonly updated_at: CreationOptional<Date>;
-  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 Role.init(
@@ -33,18 +30,6 @@ Role.init(
     },
     role_description: {
       type: DataTypes.STRING(512),
-      allowNull: true,
-    },
-    created_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    updated_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    deleted_at: {
-      type: DataTypes.DATE(3),
       allowNull: true,
     },
   },

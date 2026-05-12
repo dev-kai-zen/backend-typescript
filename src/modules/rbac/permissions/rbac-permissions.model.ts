@@ -15,9 +15,6 @@ export class RbacPermission extends Model<
   declare permission_code: string;
   declare permission_description: CreationOptional<string | null>;
   declare group_id: CreationOptional<number | null>;
-  declare readonly created_at: CreationOptional<Date>;
-  declare readonly updated_at: CreationOptional<Date>;
-  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 RbacPermission.init(
@@ -45,18 +42,6 @@ RbacPermission.init(
       },
       onDelete: "SET NULL",
       onUpdate: "CASCADE",
-    },
-    created_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    updated_at: {
-      type: DataTypes.DATE(3),
-      allowNull: false,
-    },
-    deleted_at: {
-      type: DataTypes.DATE(3),
-      allowNull: true,
     },
   },
   {
