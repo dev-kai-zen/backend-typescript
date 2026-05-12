@@ -1,4 +1,4 @@
-import { Role } from "./roles.model";
+import { Role } from "./rbac-roles.model";
 
 export async function listRoles(): Promise<Role[]> {
   return Role.findAll({ order: [["id", "ASC"]] });

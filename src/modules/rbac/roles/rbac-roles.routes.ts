@@ -6,7 +6,7 @@ import {
   getRole,
   listRoles,
   updateRole,
-} from "./roles.controller";
+} from "./rbac-roles.controller";
 
 export const rbacRolesRoutes = Router();
 

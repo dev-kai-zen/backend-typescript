@@ -1,4 +1,4 @@
-import * as rolesRepository from "../roles/roles.repository";
+import * as rolesRepository from "../roles/rbac-roles.repository";
 import * as rbacRolePermissionsRepository from "./rbac-role-permissions.repository";
 import type { RbacRolePermission } from "./rbac-role-permissions.model";
 

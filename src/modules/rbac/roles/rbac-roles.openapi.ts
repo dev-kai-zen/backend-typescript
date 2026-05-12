@@ -1,5 +1,5 @@
 /**
- * OpenAPI fragments for `roles.routes.ts`.
+ * OpenAPI fragments for `rbac-roles.routes.ts`.
  * Consumed by swagger-jsdoc via `config/swagger-config.ts` (`apis` glob); not imported at runtime.
  */
 

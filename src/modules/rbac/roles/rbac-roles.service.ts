@@ -1,5 +1,5 @@
-import * as rolesRepository from "./roles.repository";
-import type { Role } from "./roles.model";
+import * as rolesRepository from "./rbac-roles.repository";
+import type { Role } from "./rbac-roles.model";
 
 export async function listRoles(): Promise<Role[]> {
   return rolesRepository.listRoles();

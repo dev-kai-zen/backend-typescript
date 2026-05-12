@@ -2,8 +2,11 @@ import type { Request, Response } from "express";
 import { UniqueConstraintError } from "sequelize";
 
 import { formatZodError } from "../../../shared/validation/format-zod-error";
-import { createRoleBodySchema, updateRoleBodySchema } from "./roles.schemas";
-import * as rolesService from "./roles.service";
+import {
+  createRoleBodySchema,
+  updateRoleBodySchema,
+} from "./rbac-roles.schemas";
+import * as rolesService from "./rbac-roles.service";
 
 export async function listRoles(_req: Request, res: Response): Promise<void> {
   try {

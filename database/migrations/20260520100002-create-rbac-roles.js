@@ -1,6 +1,6 @@
 "use strict";
 
-/** @see src/modules/rbac/roles/roles.model.ts */
+/** @see src/modules/rbac/roles/rbac-roles.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
