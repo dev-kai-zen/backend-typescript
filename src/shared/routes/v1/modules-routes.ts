@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { auditLogsRoutes } from "../../../modules/audit-logs/audit-logs.routes";
+import { contentManagementRoutes } from "../../../modules/content-management/content-management.routes";
 import { googleAuthRoutes } from "../../../modules/google-auth/google-auth.routes";
 import { rbacRoutes } from "../../../modules/rbac/rbac.routes";
 import { refreshTokenRoutes } from "../../../modules/refresh-token/refresh-token.routes";
@@ -11,6 +12,7 @@ import { usersRoutes } from "../../../modules/users/users.routes";
 export const v1ModulesRouter = Router();
 
 v1ModulesRouter.use("/audit-logs", auditLogsRoutes);
+v1ModulesRouter.use("/content-management", contentManagementRoutes);
 v1ModulesRouter.use("/google-auth", googleAuthRoutes);
 v1ModulesRouter.use("/rbac", rbacRoutes);
 v1ModulesRouter.use("/refresh-tokens", refreshTokenRoutes);
