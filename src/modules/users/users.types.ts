@@ -17,4 +17,6 @@ export interface UpdateUserInput {
 
 export interface ListUsersFilters {
   isActive?: boolean;
+  /** When set, only users assigned this RBAC role (`rbac_user_roles`). */
+  roleId?: number;
 }

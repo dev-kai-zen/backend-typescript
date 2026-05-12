@@ -5,6 +5,18 @@ export async function listUserRoles(userId: number): Promise<RbacUserRole[]> {
   return rbacUserRolesRepository.listUserRoles(userId);
 }
 
+export async function setUserRoles(
+  userId: number,
+  roleIds: number[],
+  assignedBy: number,
+): Promise<RbacUserRole[] | null> {
+  return rbacUserRolesRepository.setUserRolesForUser(
+    userId,
+    roleIds,
+    assignedBy,
+  );
+}
+
 export async function createUserRole(data: {
   userId: number;
   roleId: number;

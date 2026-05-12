@@ -12,8 +12,17 @@ export async function listUsers(req: Request, res: Response): Promise<void> {
   } else if (req.query.isActive === "false") {
     isActive = false;
   }
+  let roleId: number | undefined;
+  const roleRaw = req.query.roleId;
+  if (
+    typeof roleRaw === "string" &&
+    roleRaw !== "" &&
+    Number.isFinite(Number.parseInt(roleRaw, 10))
+  ) {
+    roleId = Number.parseInt(roleRaw, 10);
+  }
   try {
-    const users = await usersService.listUsers({ isActive });
+    const users = await usersService.listUsers({ isActive, roleId });
     res.json({ data: users });
   } catch (err) {
     console.error("listUsers:", err);

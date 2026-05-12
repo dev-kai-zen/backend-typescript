@@ -1,5 +1,6 @@
-import type { WhereOptions } from "sequelize";
+import { Op, type WhereOptions } from "sequelize";
 
+import { RbacUserRole } from "../rbac/user-roles/rbac-user-roles.model";
 import { User } from "./users.model";
 import type { CreateUserInput, ListUsersFilters } from "./users.types";
 
@@ -7,6 +8,22 @@ export async function listUsers(filters: ListUsersFilters): Promise<User[]> {
   const where: WhereOptions<User> = {};
   if (filters.isActive !== undefined) {
     where.is_active = filters.isActive;
+  }
+  if (
+    filters.roleId !== undefined &&
+    typeof filters.roleId === "number" &&
+    Number.isFinite(filters.roleId)
+  ) {
+    const links = await RbacUserRole.findAll({
+      attributes: ["user_id"],
+      where: { role_id: filters.roleId },
+      raw: true,
+    });
+    const ids = [...new Set(links.map((l) => l.user_id))];
+    if (ids.length === 0) {
+      return [];
+    }
+    where.id = { [Op.in]: ids };
   }
   return User.findAll({
     where,

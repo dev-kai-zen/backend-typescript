@@ -39,6 +39,29 @@
  *         description: Created
  *       400:
  *         description: Validation error
+ *   put:
+ *     tags: [RBAC — User roles]
+ *     summary: Replace all roles for a user (bulk sync)
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             additionalProperties: true
+ *     responses:
+ *       200:
+ *         description: OK
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: User not found
  */
 
 /**
