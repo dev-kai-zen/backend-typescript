@@ -1,7 +1,10 @@
 import type { WhereOptions } from "sequelize";
 
 import { AuditLog } from "./audit-logs.model";
-import type { CreateAuditLogInput, ListAuditLogsFilters } from "./audit-logs.types";
+import type {
+  CreateAuditLogInput,
+  ListAuditLogsFilters,
+} from "./audit-logs.types";
 
 export async function listAuditLogs(
   filters: ListAuditLogsFilters,
@@ -11,15 +14,15 @@ export async function listAuditLogs(
   if (filters.action !== undefined && filters.action !== "") {
     where.action = filters.action;
   }
-  if (filters.entityType !== undefined && filters.entityType !== "") {
-    where.entityType = filters.entityType;
+  if (filters.entity_type !== undefined && filters.entity_type !== "") {
+    where.entity_type = filters.entity_type;
   }
 
   return AuditLog.findAll({
     where,
     limit: options.limit,
     offset: options.offset,
-    order: [["createdAt", "DESC"]],
+    order: [["created_at", "DESC"]],
   });
 }
 
@@ -27,15 +30,15 @@ export async function createAuditLog(
   input: CreateAuditLogInput,
 ): Promise<AuditLog> {
   return AuditLog.create({
-    userId: input.userId ?? null,
+    user_id: input.user_id ?? null,
     action: input.action,
-    entityType: input.entityType,
-    entityId: input.entityId ?? null,
-    oldValues: input.oldValues ?? null,
-    newValues: input.newValues ?? null,
-    changeFields: input.changeFields ?? null,
-    ipAddress: input.ipAddress ?? null,
-    userAgent: input.userAgent ?? null,
+    entity_type: input.entity_type,
+    entity_id: input.entity_id ?? null,
+    old_values: input.old_values ?? null,
+    new_values: input.new_values ?? null,
+    change_fields: input.change_fields ?? null,
+    ip_address: input.ip_address ?? null,
+    user_agent: input.user_agent ?? null,
     timestamp: input.timestamp ?? new Date(),
   });
 }
@@ -48,15 +51,15 @@ export async function createAuditLogs(
   }
   return AuditLog.bulkCreate(
     inputs.map((input) => ({
-      userId: input.userId ?? null,
+      user_id: input.user_id ?? null,
       action: input.action,
-      entityType: input.entityType,
-      entityId: input.entityId ?? null,
-      oldValues: input.oldValues ?? null,
-      newValues: input.newValues ?? null,
-      changeFields: input.changeFields ?? null,
-      ipAddress: input.ipAddress ?? null,
-      userAgent: input.userAgent ?? null,
+      entity_type: input.entity_type,
+      entity_id: input.entity_id ?? null,
+      old_values: input.old_values ?? null,
+      new_values: input.new_values ?? null,
+      change_fields: input.change_fields ?? null,
+      ip_address: input.ip_address ?? null,
+      user_agent: input.user_agent ?? null,
       timestamp: input.timestamp ?? new Date(),
     })),
     { validate: true },

@@ -1,10 +1,11 @@
 "use strict";
 
+/** @see src/modules/rbac/user-roles/rbac-user-roles.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "refresh_tokens",
+      "rbac_user_roles",
       {
         id: {
           type: Sequelize.INTEGER.UNSIGNED,
@@ -14,21 +15,23 @@ module.exports = {
         user_id: {
           type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
-          references: {
-            model: "users",
-            key: "id",
-          },
-          onUpdate: "CASCADE",
+          references: { model: "users", key: "id" },
           onDelete: "CASCADE",
+          onUpdate: "CASCADE",
         },
-        token: {
-          type: Sequelize.STRING(512),
+        role_id: {
+          type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
-          unique: true,
+          references: { model: "rbac_roles", key: "id" },
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE",
         },
-        expires_at: {
-          type: Sequelize.DATE(3),
+        assigned_by: {
+          type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
+          references: { model: "users", key: "id" },
+          onDelete: "CASCADE",
+          onUpdate: "CASCADE",
         },
         created_at: {
           type: Sequelize.DATE(3),
@@ -38,25 +41,25 @@ module.exports = {
         updated_at: {
           type: Sequelize.DATE(3),
           allowNull: false,
+          defaultValue: Sequelize.literal(
+            "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+          ),
         },
       },
       {
         charset: "utf8mb4",
         collate: "utf8mb4_unicode_ci",
+        indexes: [
+          {
+            unique: true,
+            fields: ["user_id", "role_id"],
+          },
+        ],
       },
     );
-
-    await queryInterface.addIndex("refresh_tokens", {
-      fields: ["user_id"],
-      name: "refresh_tokens_user_id_idx",
-    });
   },
 
   async down(queryInterface) {
-    await queryInterface.removeIndex(
-      "refresh_tokens",
-      "refresh_tokens_user_id_idx",
-    );
-    await queryInterface.dropTable("refresh_tokens");
+    await queryInterface.dropTable("rbac_user_roles");
   },
 };

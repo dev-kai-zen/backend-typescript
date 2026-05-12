@@ -1,20 +1,20 @@
 "use strict";
 
+/** @see src/modules/content-management/asa-operations/asa-operations.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "asa_branch_types",
+      "asa_operations",
       {
         id: {
           type: Sequelize.INTEGER.UNSIGNED,
           autoIncrement: true,
           primaryKey: true,
         },
-        type_name: {
+        operation_name: {
           type: Sequelize.STRING(255),
           allowNull: false,
-          unique: true,
         },
         created_at: {
           type: Sequelize.DATE(3),
@@ -24,16 +24,16 @@ module.exports = {
         updated_at: {
           type: Sequelize.DATE(3),
           allowNull: false,
+          defaultValue: Sequelize.literal(
+            "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+          ),
         },
       },
-      {
-        charset: "utf8mb4",
-        collate: "utf8mb4_unicode_ci",
-      },
+      { charset: "utf8mb4", collate: "utf8mb4_unicode_ci" },
     );
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable("asa_branch_types");
+    await queryInterface.dropTable("asa_operations");
   },
 };

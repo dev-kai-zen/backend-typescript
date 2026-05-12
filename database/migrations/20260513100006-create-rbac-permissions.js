@@ -1,29 +1,32 @@
 "use strict";
 
+/** @see src/modules/rbac/permissions/rbac-permissions.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "asa_divisions",
+      "rbac_permissions",
       {
         id: {
           type: Sequelize.INTEGER.UNSIGNED,
           autoIncrement: true,
           primaryKey: true,
         },
-        name: {
-          type: Sequelize.STRING(255),
+        permission_code: {
+          type: Sequelize.STRING(128),
           allowNull: false,
+          unique: true,
         },
-        asa_operation_id: {
+        permission_description: {
+          type: Sequelize.STRING(512),
+          allowNull: true,
+        },
+        group_id: {
           type: Sequelize.INTEGER.UNSIGNED,
-          allowNull: false,
-          references: {
-            model: "asa_operations",
-            key: "id",
-          },
+          allowNull: true,
+          references: { model: "rbac_groups", key: "id" },
+          onDelete: "SET NULL",
           onUpdate: "CASCADE",
-          onDelete: "CASCADE",
         },
         created_at: {
           type: Sequelize.DATE(3),
@@ -33,25 +36,16 @@ module.exports = {
         updated_at: {
           type: Sequelize.DATE(3),
           allowNull: false,
+          defaultValue: Sequelize.literal(
+            "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+          ),
         },
       },
-      {
-        charset: "utf8mb4",
-        collate: "utf8mb4_unicode_ci",
-      },
+      { charset: "utf8mb4", collate: "utf8mb4_unicode_ci" },
     );
-
-    await queryInterface.addIndex("asa_divisions", {
-      name: "idx_asa_divisions_asa_operation_id",
-      fields: ["asa_operation_id"],
-    });
   },
 
   async down(queryInterface) {
-    await queryInterface.removeIndex(
-      "asa_divisions",
-      "idx_asa_divisions_asa_operation_id",
-    );
-    await queryInterface.dropTable("asa_divisions");
+    await queryInterface.dropTable("rbac_permissions");
   },
 };

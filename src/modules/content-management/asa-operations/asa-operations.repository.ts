@@ -10,7 +10,9 @@ export async function createAsaOperation(data: {
   return AsaOperation.create({ operationName: data.operationName });
 }
 
-export async function getAsaOperation(id: number): Promise<AsaOperation | null> {
+export async function getAsaOperation(
+  id: number,
+): Promise<AsaOperation | null> {
   return AsaOperation.findByPk(id);
 }
 

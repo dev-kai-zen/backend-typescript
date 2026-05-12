@@ -10,7 +10,9 @@ export async function createAsaBranchType(data: {
   return AsaBranchType.create({ typeName: data.typeName });
 }
 
-export async function getAsaBranchType(id: number): Promise<AsaBranchType | null> {
+export async function getAsaBranchType(
+  id: number,
+): Promise<AsaBranchType | null> {
   return AsaBranchType.findByPk(id);
 }
 

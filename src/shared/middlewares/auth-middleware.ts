@@ -20,7 +20,9 @@ export async function authenticateJwt(
   try {
     userId = verifyAccessToken(token);
   } catch {
-    res.status(401).json({ success: false, message: "Invalid or expired token" });
+    res
+      .status(401)
+      .json({ success: false, message: "Invalid or expired token" });
     return;
   }
 

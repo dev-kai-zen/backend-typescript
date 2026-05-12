@@ -1,5 +1,6 @@
 "use strict";
 
+/** @see src/modules/users/users.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -46,12 +47,12 @@ module.exports = {
         updated_at: {
           type: Sequelize.DATE(3),
           allowNull: false,
+          defaultValue: Sequelize.literal(
+            "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+          ),
         },
       },
-      {
-        charset: "utf8mb4",
-        collate: "utf8mb4_unicode_ci",
-      },
+      { charset: "utf8mb4", collate: "utf8mb4_unicode_ci" },
     );
   },
 

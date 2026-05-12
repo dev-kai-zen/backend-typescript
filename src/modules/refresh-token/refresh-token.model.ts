@@ -60,9 +60,7 @@ RefreshToken.init(
     tableName: "refresh_tokens",
     underscored: true,
     timestamps: true,
-    indexes: [
-      { fields: ["user_id"] },
-    ],
+    indexes: [{ fields: ["user_id"] }],
   },
 );
 

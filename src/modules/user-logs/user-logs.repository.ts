@@ -1,7 +1,10 @@
 import type { WhereOptions } from "sequelize";
 
 import { UserLog } from "./user-logs.model";
-import type { CreateUserLogInput, ListUserLogsFilters } from "./user-logs.types";
+import type {
+  CreateUserLogInput,
+  ListUserLogsFilters,
+} from "./user-logs.types";
 
 export async function listUserLogs(
   filters: ListUserLogsFilters,

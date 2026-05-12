@@ -3,9 +3,7 @@ import type { WhereOptions } from "sequelize";
 import { User } from "./users.model";
 import type { CreateUserInput, ListUsersFilters } from "./users.types";
 
-export async function listUsers(
-  filters: ListUsersFilters,
-): Promise<User[]> {
+export async function listUsers(filters: ListUsersFilters): Promise<User[]> {
   const where: WhereOptions<User> = {};
   if (filters.isActive !== undefined) {
     where.isActive = filters.isActive;

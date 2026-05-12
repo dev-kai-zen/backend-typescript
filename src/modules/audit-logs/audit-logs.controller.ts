@@ -8,10 +8,10 @@ export async function listAuditLogs(req: Request, res: Response): Promise<void> 
       typeof req.query.action === "string" && req.query.action !== ""
         ? req.query.action
         : undefined;
-    const entityType =
-      typeof req.query.entityType === "string" &&
-      req.query.entityType !== ""
-        ? req.query.entityType
+    const entity_type =
+      typeof req.query.entity_type === "string" &&
+      req.query.entity_type !== ""
+        ? req.query.entity_type
         : undefined;
 
     let limit: number | undefined;
@@ -31,7 +31,7 @@ export async function listAuditLogs(req: Request, res: Response): Promise<void> 
     }
 
     const logs = await auditLogsService.listAuditLogs(
-      { action, entityType },
+      { action, entity_type },
       { limit, offset },
     );
 

@@ -1,10 +1,12 @@
 import * as usersRepository from "./users.repository";
 import type { User } from "./users.model";
-import type { CreateUserInput, ListUsersFilters, UpdateUserInput } from "./users.types";
+import type {
+  CreateUserInput,
+  ListUsersFilters,
+  UpdateUserInput,
+} from "./users.types";
 
-export async function listUsers(
-  filters: ListUsersFilters,
-): Promise<User[]> {
+export async function listUsers(filters: ListUsersFilters): Promise<User[]> {
   return usersRepository.listUsers(filters);
 }
 

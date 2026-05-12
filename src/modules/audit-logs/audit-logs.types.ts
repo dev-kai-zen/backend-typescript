@@ -1,18 +1,18 @@
 export interface ListAuditLogsFilters {
   action?: string;
-  entityType?: string;
+  entity_type?: string;
 }
 
 export interface CreateAuditLogInput {
-  userId?: number | null;
+  user_id?: number | null;
   action: string;
-  entityType: string;
-  entityId?: string | null;
-  oldValues?: Record<string, unknown> | null;
-  newValues?: Record<string, unknown> | null;
-  changeFields?: string[] | null;
-  ipAddress?: string | null;
-  userAgent?: string | null;
+  entity_type: string;
+  entity_id?: string | null;
+  old_values?: Record<string, unknown> | null;
+  new_values?: Record<string, unknown> | null;
+  change_fields?: string[] | null;
+  ip_address?: string | null;
+  user_agent?: string | null;
   /** Defaults to `new Date()` when omitted. */
   timestamp?: Date;
 }

@@ -1,5 +1,6 @@
 "use strict";
 
+/** @see src/modules/audit-logs/audit-logs.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -10,17 +11,14 @@ module.exports = {
           type: Sequelize.UUID,
           allowNull: false,
           primaryKey: true,
-          defaultValue: Sequelize.literal("(UUID())"),
+          defaultValue: Sequelize.UUIDV4,
         },
         user_id: {
           type: Sequelize.INTEGER.UNSIGNED,
           allowNull: true,
-          references: {
-            model: "users",
-            key: "id",
-          },
-          onUpdate: "CASCADE",
+          references: { model: "users", key: "id" },
           onDelete: "SET NULL",
+          onUpdate: "CASCADE",
         },
         action: {
           type: Sequelize.STRING(64),
@@ -66,23 +64,17 @@ module.exports = {
         updated_at: {
           type: Sequelize.DATE(3),
           allowNull: false,
+          defaultValue: Sequelize.literal(
+            "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+          ),
+        },
+        deleted_at: {
+          type: Sequelize.DATE(3),
+          allowNull: true,
         },
       },
-      {
-        charset: "utf8mb4",
-        collate: "utf8mb4_unicode_ci",
-      },
+      { charset: "utf8mb4", collate: "utf8mb4_unicode_ci" },
     );
-
-    await queryInterface.addIndex("audit_logs", ["user_id"], {
-      name: "audit_logs_user_id_idx",
-    });
-    await queryInterface.addIndex("audit_logs", ["entity_type", "entity_id"], {
-      name: "audit_logs_entity_idx",
-    });
-    await queryInterface.addIndex("audit_logs", ["timestamp"], {
-      name: "audit_logs_timestamp_idx",
-    });
   },
 
   async down(queryInterface) {

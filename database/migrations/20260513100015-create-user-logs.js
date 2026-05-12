@@ -1,5 +1,6 @@
 "use strict";
 
+/** @see src/modules/user-logs/user-logs.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -76,27 +77,16 @@ module.exports = {
       {
         charset: "utf8mb4",
         collate: "utf8mb4_unicode_ci",
+        indexes: [
+          { name: "idx_user_id", fields: ["user_id"] },
+          { name: "idx_action", fields: ["action"] },
+          { name: "idx_created_at", fields: ["created_at"] },
+        ],
       },
     );
-
-    await queryInterface.addIndex("user_logs", {
-      name: "idx_user_id",
-      fields: ["user_id"],
-    });
-    await queryInterface.addIndex("user_logs", {
-      name: "idx_action",
-      fields: ["action"],
-    });
-    await queryInterface.addIndex("user_logs", {
-      name: "idx_created_at",
-      fields: ["created_at"],
-    });
   },
 
   async down(queryInterface) {
-    await queryInterface.removeIndex("user_logs", "idx_user_id");
-    await queryInterface.removeIndex("user_logs", "idx_action");
-    await queryInterface.removeIndex("user_logs", "idx_created_at");
     await queryInterface.dropTable("user_logs");
   },
 };

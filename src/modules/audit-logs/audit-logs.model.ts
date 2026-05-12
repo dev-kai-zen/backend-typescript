@@ -13,19 +13,20 @@ export class AuditLog extends Model<
   InferCreationAttributes<AuditLog>
 > {
   declare id: CreationOptional<string>;
-  declare userId: CreationOptional<number | null>;
+  declare user_id: CreationOptional<number | null>;
   declare action: string;
-  declare entityType: string;
-  declare entityId: CreationOptional<string | null>;
-  declare oldValues: CreationOptional<Record<string, unknown> | null>;
-  declare newValues: CreationOptional<Record<string, unknown> | null>;
-  declare changeFields: CreationOptional<string[] | null>;
-  declare ipAddress: CreationOptional<string | null>;
-  declare userAgent: CreationOptional<string | null>;
-  /** Business event time (distinct from `createdAt` when logs are backfilled or delayed). */
+  declare entity_type: string;
+  declare entity_id: CreationOptional<string | null>;
+  declare old_values: CreationOptional<Record<string, unknown> | null>;
+  declare new_values: CreationOptional<Record<string, unknown> | null>;
+  declare change_fields: CreationOptional<string[] | null>;
+  declare ip_address: CreationOptional<string | null>;
+  declare user_agent: CreationOptional<string | null>;
+  /** Business event time (distinct from `created_at` when logs are backfilled or delayed). */
   declare timestamp: Date;
-  declare readonly createdAt: CreationOptional<Date>;
-  declare readonly updatedAt: CreationOptional<Date>;
+  declare readonly created_at: CreationOptional<Date>;
+  declare readonly updated_at: CreationOptional<Date>;
+  declare readonly deleted_at: CreationOptional<Date | null>;
 }
 
 AuditLog.init(
@@ -35,7 +36,7 @@ AuditLog.init(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    userId: {
+    user_id: {
       type: DataTypes.INTEGER.UNSIGNED,
       allowNull: true,
       references: {
@@ -49,31 +50,31 @@ AuditLog.init(
       type: DataTypes.STRING(64),
       allowNull: false,
     },
-    entityType: {
+    entity_type: {
       type: DataTypes.STRING(128),
       allowNull: false,
     },
-    entityId: {
+    entity_id: {
       type: DataTypes.STRING(64),
       allowNull: true,
     },
-    oldValues: {
+    old_values: {
       type: DataTypes.JSON,
       allowNull: true,
     },
-    newValues: {
+    new_values: {
       type: DataTypes.JSON,
       allowNull: true,
     },
-    changeFields: {
+    change_fields: {
       type: DataTypes.JSON,
       allowNull: true,
     },
-    ipAddress: {
+    ip_address: {
       type: DataTypes.STRING(45),
       allowNull: true,
     },
-    userAgent: {
+    user_agent: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
@@ -81,13 +82,17 @@ AuditLog.init(
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    createdAt: {
+    created_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
     },
-    updatedAt: {
+    updated_at: {
       type: DataTypes.DATE(3),
       allowNull: false,
+    },
+    deleted_at: {
+      type: DataTypes.DATE(3),
+      allowNull: true,
     },
   },
   {
@@ -95,7 +100,11 @@ AuditLog.init(
     tableName: "audit_logs",
     underscored: true,
     timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+    deletedAt: "deleted_at",
+    paranoid: true,
   },
 );
 
-AuditLog.belongsTo(User, { foreignKey: "userId", as: "user" });
+AuditLog.belongsTo(User, { foreignKey: "user_id", as: "user" });

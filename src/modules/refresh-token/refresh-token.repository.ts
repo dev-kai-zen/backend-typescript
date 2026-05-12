@@ -1,6 +1,9 @@
 import type { WhereOptions } from "sequelize";
 
-import type { CreateRefreshTokenInput, ListRefreshTokensFilters } from "./refresh-token.types";
+import type {
+  CreateRefreshTokenInput,
+  ListRefreshTokensFilters,
+} from "./refresh-token.types";
 import { RefreshToken } from "./refresh-token.model";
 
 export async function listRefreshTokens(

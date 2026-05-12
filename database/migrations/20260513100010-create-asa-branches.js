@@ -1,5 +1,6 @@
 "use strict";
 
+/** @see src/modules/content-management/asa-branches/asa-branches.model.ts */
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -23,22 +24,16 @@ module.exports = {
         asa_area_id: {
           type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
-          references: {
-            model: "asa_areas",
-            key: "id",
-          },
-          onUpdate: "CASCADE",
+          references: { model: "asa_areas", key: "id" },
           onDelete: "CASCADE",
+          onUpdate: "CASCADE",
         },
         asa_branch_type_id: {
           type: Sequelize.INTEGER.UNSIGNED,
           allowNull: false,
-          references: {
-            model: "asa_branch_types",
-            key: "id",
-          },
-          onUpdate: "CASCADE",
+          references: { model: "asa_branch_types", key: "id" },
           onDelete: "RESTRICT",
+          onUpdate: "CASCADE",
         },
         created_at: {
           type: Sequelize.DATE(3),
@@ -48,33 +43,16 @@ module.exports = {
         updated_at: {
           type: Sequelize.DATE(3),
           allowNull: false,
+          defaultValue: Sequelize.literal(
+            "CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)",
+          ),
         },
       },
-      {
-        charset: "utf8mb4",
-        collate: "utf8mb4_unicode_ci",
-      },
+      { charset: "utf8mb4", collate: "utf8mb4_unicode_ci" },
     );
-
-    await queryInterface.addIndex("asa_branches", {
-      name: "idx_asa_branches_asa_area_id",
-      fields: ["asa_area_id"],
-    });
-    await queryInterface.addIndex("asa_branches", {
-      name: "idx_asa_branches_asa_branch_type_id",
-      fields: ["asa_branch_type_id"],
-    });
   },
 
   async down(queryInterface) {
-    await queryInterface.removeIndex(
-      "asa_branches",
-      "idx_asa_branches_asa_area_id",
-    );
-    await queryInterface.removeIndex(
-      "asa_branches",
-      "idx_asa_branches_asa_branch_type_id",
-    );
     await queryInterface.dropTable("asa_branches");
   },
 };
