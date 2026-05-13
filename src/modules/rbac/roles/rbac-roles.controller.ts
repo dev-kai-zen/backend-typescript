@@ -82,6 +82,7 @@ export async function updateRole(req: Request, res: Response): Promise<void> {
     const role = await rolesService.updateRole(id, {
       roleName: parsed.data.roleName,
       roleDescription: parsed.data.roleDescription,
+      isActive: parsed.data.isActive,
     });
     if (!role) {
       res.status(404).json({ message: "Role not found" });

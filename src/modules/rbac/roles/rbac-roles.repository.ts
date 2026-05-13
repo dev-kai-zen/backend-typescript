@@ -23,6 +23,7 @@ export async function updateRole(
   data: {
     roleName?: string;
     roleDescription?: string | null;
+    isActive?: boolean;
   },
 ): Promise<Role | null> {
   const role = await Role.findByPk(id);
@@ -32,12 +33,16 @@ export async function updateRole(
   const patch: Partial<{
     role_name: string;
     role_description: string | null;
+    is_active: boolean;
   }> = {};
   if (data.roleName !== undefined) {
     patch.role_name = data.roleName;
   }
   if (data.roleDescription !== undefined) {
     patch.role_description = data.roleDescription;
+  }
+  if (data.isActive !== undefined) {
+    patch.is_active = data.isActive;
   }
   await role.update(patch);
   return role;

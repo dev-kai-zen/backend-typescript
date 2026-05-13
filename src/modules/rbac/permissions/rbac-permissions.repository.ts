@@ -36,6 +36,7 @@ export async function updatePermission(
     permissionCode?: string;
     permissionDescription?: string | null;
     categoryId?: number | null;
+    isActive?: boolean;
   },
 ): Promise<RbacPermission | null> {
   const row = await RbacPermission.findByPk(id);
@@ -46,6 +47,7 @@ export async function updatePermission(
     permission_code: string;
     permission_description: string | null;
     category_id: number | null;
+    is_active: boolean;
   }> = {};
   if (data.permissionCode !== undefined) {
     patch.permission_code = data.permissionCode;
@@ -55,6 +57,9 @@ export async function updatePermission(
   }
   if (data.categoryId !== undefined) {
     patch.category_id = data.categoryId;
+  }
+  if (data.isActive !== undefined) {
+    patch.is_active = data.isActive;
   }
   await row.update(patch);
   return row;

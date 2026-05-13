@@ -39,6 +39,7 @@ export const updatePermissionBodySchema = z
     permissionCode: z.string().min(1),
     permissionDescription: nullableString,
     categoryId: z.union([z.coerce.number().int().nonnegative(), z.null()]),
+    isActive: z.boolean(),
   })
   .partial()
   .strict()

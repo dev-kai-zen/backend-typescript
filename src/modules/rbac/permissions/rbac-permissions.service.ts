@@ -34,6 +34,7 @@ export async function updatePermission(
     permissionCode?: string;
     permissionDescription?: string | null;
     categoryId?: number | null;
+    isActive?: boolean;
   },
 ): Promise<RbacPermission | null> {
   if (
@@ -47,6 +48,7 @@ export async function updatePermission(
     permissionCode?: string;
     permissionDescription?: string | null;
     categoryId?: number | null;
+    isActive?: boolean;
   } = {};
   if (data.permissionCode !== undefined) {
     patch.permissionCode = data.permissionCode.trim();
@@ -56,6 +58,9 @@ export async function updatePermission(
   }
   if (data.categoryId !== undefined) {
     patch.categoryId = data.categoryId;
+  }
+  if (data.isActive !== undefined) {
+    patch.isActive = data.isActive;
   }
   if (Object.keys(patch).length === 0) {
     throw new Error("No fields to update");

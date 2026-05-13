@@ -15,6 +15,7 @@ export const updateRoleBodySchema = z
   .object({
     roleName: z.string().min(1),
     roleDescription: nullableString,
+    isActive: z.boolean(),
   })
   .partial()
   .strict()

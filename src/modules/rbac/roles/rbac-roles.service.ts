@@ -27,6 +27,7 @@ export async function updateRole(
   data: {
     roleName?: string;
     roleDescription?: string | null;
+    isActive?: boolean;
   },
 ): Promise<Role | null> {
   if (
@@ -38,12 +39,16 @@ export async function updateRole(
   const patch: {
     roleName?: string;
     roleDescription?: string | null;
+    isActive?: boolean;
   } = {};
   if (data.roleName !== undefined) {
     patch.roleName = data.roleName.trim();
   }
   if (data.roleDescription !== undefined) {
     patch.roleDescription = data.roleDescription;
+  }
+  if (data.isActive !== undefined) {
+    patch.isActive = data.isActive;
   }
   if (Object.keys(patch).length === 0) {
     throw new Error("No fields to update");
