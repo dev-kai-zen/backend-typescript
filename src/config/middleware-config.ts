@@ -5,6 +5,7 @@ import express from "express";
 
 import { env } from "./env-config";
 import { setupSwagger } from "./swagger-config";
+import { apiLimiter } from "../shared/middlewares/rate-limiter";
 
 /**
  * Register global middleware here in order (top runs first).
@@ -20,8 +21,7 @@ export function applyMiddlewares(app: Express): void {
   app.use(cookieParser());
   app.use(express.json());
 
-  setupSwagger(app);
+  app.use("/api/v1", apiLimiter);
 
-  // Add more middlewares below this line, e.g.:
-  // app.use(rateLimiter);
+  setupSwagger(app);
 }

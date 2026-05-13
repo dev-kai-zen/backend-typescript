@@ -17,6 +17,15 @@ function optional(name: string, fallback: string): string {
   return v && v !== "" ? v : fallback;
 }
 
+function optionalPositiveInt(name: string, fallback: number): number {
+  const v = process.env[name]?.trim();
+  if (!v) {
+    return fallback;
+  }
+  const n = Number.parseInt(v, 10);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+}
+
 const nodeEnv = optional("NODE_ENV", "development");
 
 export const env = {
@@ -27,4 +36,16 @@ export const env = {
   jwtSecret: required("JWT_SECRET"),
   googleClientId: required("GOOGLE_CLIENT_ID"),
   frontendOrigin: optional("FRONTEND_ORIGIN", "http://localhost:5173"),
+  /** Max auth attempts (login/refresh) per IP per `rateLimitAuthWindowMs`. */
+  rateLimitAuthMax: optionalPositiveInt("RATE_LIMIT_AUTH_MAX", 20),
+  rateLimitAuthWindowMs: optionalPositiveInt(
+    "RATE_LIMIT_AUTH_WINDOW_MS",
+    15 * 60 * 1000,
+  ),
+  /** Max API requests per IP per `rateLimitApiWindowMs` (applies under `/api/v1`). */
+  rateLimitApiMax: optionalPositiveInt("RATE_LIMIT_API_MAX", 120),
+  rateLimitApiWindowMs: optionalPositiveInt(
+    "RATE_LIMIT_API_WINDOW_MS",
+    60 * 1000,
+  ),
 };
