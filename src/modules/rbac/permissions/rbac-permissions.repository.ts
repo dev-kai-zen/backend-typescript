@@ -1,6 +1,22 @@
 import type { WhereOptions } from "sequelize";
+import { Op } from "sequelize";
 
 import { RbacPermission } from "./rbac-permissions.model";
+
+export async function permissionDefinitionsEligibleForGuard(
+  permissionCodes: string[],
+): Promise<boolean> {
+  const unique = [...new Set(permissionCodes)];
+  if (unique.length === 0) {
+    return true;
+  }
+  const rows = await RbacPermission.findAll({
+    where: { permission_code: { [Op.in]: unique } },
+    attributes: ["permission_code", "is_active"],
+  });
+  const byCode = new Map(rows.map((r) => [r.permission_code, r]));
+  return unique.every((c) => byCode.get(c)?.is_active === true);
+}
 
 export async function listPermissions(filters: {
   categoryId?: number;

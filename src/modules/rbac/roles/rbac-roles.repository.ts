@@ -1,4 +1,21 @@
+import { Op } from "sequelize";
+
 import { Role } from "./rbac-roles.model";
+
+export async function roleDefinitionsEligibleForGuard(
+  roleNames: string[],
+): Promise<boolean> {
+  const unique = [...new Set(roleNames)];
+  if (unique.length === 0) {
+    return true;
+  }
+  const rows = await Role.findAll({
+    where: { role_name: { [Op.in]: unique } },
+    attributes: ["role_name", "is_active"],
+  });
+  const byName = new Map(rows.map((r) => [r.role_name, r]));
+  return unique.every((n) => byName.get(n)?.is_active === true);
+}
 
 export async function listRoles(): Promise<Role[]> {
   return Role.findAll({ order: [["id", "ASC"]] });

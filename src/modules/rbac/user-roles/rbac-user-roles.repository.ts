@@ -77,6 +77,7 @@ export async function getUserRolesWithDescriptions(
         model: RbacRole,
         as: "role",
         attributes: ["role_name", "role_description"],
+        where: { is_active: true },
         required: true,
       },
     ],

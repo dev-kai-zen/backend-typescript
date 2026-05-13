@@ -71,3 +71,11 @@ export async function updatePermission(
 export async function deletePermission(id: number): Promise<boolean> {
   return rbacPermissionsRepository.deletePermission(id);
 }
+
+export async function permissionDefinitionsEligibleForGuard(
+  permissionCodes: string[],
+): Promise<boolean> {
+  return rbacPermissionsRepository.permissionDefinitionsEligibleForGuard(
+    permissionCodes,
+  );
+}

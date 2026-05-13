@@ -73,6 +73,8 @@ export async function getRolePermissionsByRoleIds(roleIds: number[]): Promise<Ro
         model: RbacPermission,
         as: "permission",
         attributes: ["permission_code"],
+        where: { is_active: true },
+        required: true,
       },
     ],
   });

@@ -59,3 +59,9 @@ export async function updateRole(
 export async function deleteRole(id: number): Promise<boolean> {
   return rolesRepository.deleteRole(id);
 }
+
+export async function roleDefinitionsEligibleForGuard(
+  roleNames: string[],
+): Promise<boolean> {
+  return rolesRepository.roleDefinitionsEligibleForGuard(roleNames);
+}
