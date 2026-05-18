@@ -1,17 +1,11 @@
 import { Router } from "express";
 
-import {
-  createAsaOperation,
-  deleteAsaOperation,
-  getAsaOperation,
-  listAsaOperations,
-  updateAsaOperation,
-} from "./asa-operations.controller";
+import * as asaOperationsController from "./asa-operations.controller";
 
 export const asaOperationsRoutes = Router();
 
-asaOperationsRoutes.get("/", listAsaOperations);
-asaOperationsRoutes.post("/", createAsaOperation);
-asaOperationsRoutes.get("/:id", getAsaOperation);
-asaOperationsRoutes.patch("/:id", updateAsaOperation);
-asaOperationsRoutes.delete("/:id", deleteAsaOperation);
+asaOperationsRoutes.get("/", asaOperationsController.listAsaOperations);
+asaOperationsRoutes.post("/", asaOperationsController.createAsaOperation);
+asaOperationsRoutes.get("/:id", asaOperationsController.getAsaOperation);
+asaOperationsRoutes.patch("/:id", asaOperationsController.updateAsaOperation);
+asaOperationsRoutes.delete("/:id", asaOperationsController.deleteAsaOperation);

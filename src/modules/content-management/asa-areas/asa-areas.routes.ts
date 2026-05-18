@@ -1,17 +1,11 @@
 import { Router } from "express";
 
-import {
-  createAsaArea,
-  deleteAsaArea,
-  getAsaArea,
-  listAsaAreas,
-  updateAsaArea,
-} from "./asa-areas.controller";
+import * as asaAreasController from "./asa-areas.controller";
 
 export const asaAreasRoutes = Router();
 
-asaAreasRoutes.get("/", listAsaAreas);
-asaAreasRoutes.post("/", createAsaArea);
-asaAreasRoutes.get("/:id", getAsaArea);
-asaAreasRoutes.patch("/:id", updateAsaArea);
-asaAreasRoutes.delete("/:id", deleteAsaArea);
+asaAreasRoutes.get("/", asaAreasController.listAsaAreas);
+asaAreasRoutes.post("/", asaAreasController.createAsaArea);
+asaAreasRoutes.get("/:id", asaAreasController.getAsaArea);
+asaAreasRoutes.patch("/:id", asaAreasController.updateAsaArea);
+asaAreasRoutes.delete("/:id", asaAreasController.deleteAsaArea);

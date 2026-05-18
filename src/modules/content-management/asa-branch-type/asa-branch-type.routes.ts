@@ -1,17 +1,11 @@
 import { Router } from "express";
 
-import {
-  createAsaBranchType,
-  deleteAsaBranchType,
-  getAsaBranchType,
-  listAsaBranchTypes,
-  updateAsaBranchType,
-} from "./asa-branch-type.controller";
+import * as asaBranchTypeController from "./asa-branch-type.controller";
 
 export const asaBranchTypeRoutes = Router();
 
-asaBranchTypeRoutes.get("/", listAsaBranchTypes);
-asaBranchTypeRoutes.post("/", createAsaBranchType);
-asaBranchTypeRoutes.get("/:id", getAsaBranchType);
-asaBranchTypeRoutes.patch("/:id", updateAsaBranchType);
-asaBranchTypeRoutes.delete("/:id", deleteAsaBranchType);
+asaBranchTypeRoutes.get("/", asaBranchTypeController.listAsaBranchTypes);
+asaBranchTypeRoutes.post("/", asaBranchTypeController.createAsaBranchType);
+asaBranchTypeRoutes.get("/:id", asaBranchTypeController.getAsaBranchType);
+asaBranchTypeRoutes.patch("/:id", asaBranchTypeController.updateAsaBranchType);
+asaBranchTypeRoutes.delete("/:id", asaBranchTypeController.deleteAsaBranchType);

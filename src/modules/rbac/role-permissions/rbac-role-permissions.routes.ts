@@ -1,19 +1,14 @@
 import { Router } from "express";
 
-import {
-  createRolePermission,
-  deleteRolePermission,
-  listRolePermissions,
-  setRolePermissions,
-} from "./rbac-role-permissions.controller";
+import * as rbacRolePermissionController from "./rbac-role-permissions.controller";
 
 /** Nested under `/rbac/roles` (mounted with prefix `/roles`). */
 export const rbacRolePermissionsRoutes = Router();
 
-rbacRolePermissionsRoutes.get("/:id/permissions", listRolePermissions);
-rbacRolePermissionsRoutes.put("/:id/permissions", setRolePermissions);
-rbacRolePermissionsRoutes.post("/:id/permissions", createRolePermission);
+rbacRolePermissionsRoutes.get("/:id/permissions", rbacRolePermissionController.listRolePermissions);
+rbacRolePermissionsRoutes.put("/:id/permissions", rbacRolePermissionController.setRolePermissions);
+rbacRolePermissionsRoutes.post("/:id/permissions", rbacRolePermissionController.createRolePermission);
 rbacRolePermissionsRoutes.delete(
   "/:id/permissions/:permissionId",
-  deleteRolePermission,
+  rbacRolePermissionController.deleteRolePermission,
 );

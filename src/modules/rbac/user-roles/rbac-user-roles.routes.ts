@@ -1,18 +1,13 @@
 import { Router } from "express";
 
-import {
-  createUserRole,
-  deleteUserRole,
-  listUserRoles,
-  setUserRoles,
-} from "./rbac-user-roles.controller";
+import * as rbacUserRoleController from "./rbac-user-roles.controller";
 
 export const rbacUserRolesRoutes = Router();
 
-rbacUserRolesRoutes.get("/users/:userId/roles", listUserRoles);
-rbacUserRolesRoutes.put("/users/:userId/roles", setUserRoles);
-rbacUserRolesRoutes.post("/users/:userId/roles", createUserRole);
+rbacUserRolesRoutes.get("/users/:userId/roles", rbacUserRoleController.listUserRoles);
+rbacUserRolesRoutes.put("/users/:userId/roles", rbacUserRoleController.setUserRoles);
+rbacUserRolesRoutes.post("/users/:userId/roles", rbacUserRoleController.createUserRole);
 rbacUserRolesRoutes.delete(
   "/users/:userId/roles/:roleId",
-  deleteUserRole,
+  rbacUserRoleController.deleteUserRole,
 );

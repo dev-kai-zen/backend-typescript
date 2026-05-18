@@ -1,7 +1,7 @@
 import { Router } from "express";
 
-import { listAuditLogs } from "./audit-logs.controller";
+import * as auditLogsController from "./audit-logs.controller";
 
 export const auditLogsRoutes = Router();
 
-auditLogsRoutes.get("/", listAuditLogs);
+auditLogsRoutes.get("/", auditLogsController.listAuditLogs);

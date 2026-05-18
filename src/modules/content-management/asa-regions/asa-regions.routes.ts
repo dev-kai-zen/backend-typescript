@@ -1,17 +1,11 @@
 import { Router } from "express";
 
-import {
-  createAsaRegion,
-  deleteAsaRegion,
-  getAsaRegion,
-  listAsaRegions,
-  updateAsaRegion,
-} from "./asa-regions.controller";
+import * as asaRegionsController from "./asa-regions.controller";
 
 export const asaRegionsRoutes = Router();
 
-asaRegionsRoutes.get("/", listAsaRegions);
-asaRegionsRoutes.post("/", createAsaRegion);
-asaRegionsRoutes.get("/:id", getAsaRegion);
-asaRegionsRoutes.patch("/:id", updateAsaRegion);
-asaRegionsRoutes.delete("/:id", deleteAsaRegion);
+asaRegionsRoutes.get("/", asaRegionsController.listAsaRegions);
+asaRegionsRoutes.post("/", asaRegionsController.createAsaRegion);
+asaRegionsRoutes.get("/:id", asaRegionsController.getAsaRegion);
+asaRegionsRoutes.patch("/:id",asaRegionsController.updateAsaRegion);
+asaRegionsRoutes.delete("/:id", asaRegionsController.deleteAsaRegion);

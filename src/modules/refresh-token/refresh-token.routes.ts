@@ -1,17 +1,11 @@
 import { Router } from "express";
 
-import {
-  createRefreshToken,
-  deleteRefreshToken,
-  getRefreshToken,
-  listRefreshTokens,
-  revokeRefreshToken,
-} from "./refresh-token.controller";
+import * as refreshTokenController from "./refresh-token.controller";
 
 export const refreshTokenRoutes = Router();
 
-refreshTokenRoutes.get("/", listRefreshTokens);
-refreshTokenRoutes.post("/", createRefreshToken);
-refreshTokenRoutes.post("/revoke", revokeRefreshToken);
-refreshTokenRoutes.get("/:id", getRefreshToken);
-refreshTokenRoutes.delete("/:id", deleteRefreshToken);
+refreshTokenRoutes.get("/", refreshTokenController.listRefreshTokens);
+refreshTokenRoutes.post("/", refreshTokenController.createRefreshToken);
+refreshTokenRoutes.post("/revoke", refreshTokenController.revokeRefreshToken);
+refreshTokenRoutes.get("/:id", refreshTokenController.getRefreshToken);
+refreshTokenRoutes.delete("/:id", refreshTokenController.deleteRefreshToken);
