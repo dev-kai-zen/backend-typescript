@@ -2,8 +2,6 @@ import type { Router } from "express";
 
 import { userLogsRoutes } from "./user-logs.routes";
 
-export const routeRegistrationOrder = 70;
-
 export function registerV1Routes(v1Router: Router): void {
   v1Router.use("/user-logs", userLogsRoutes);
 }
