@@ -1,13 +1,12 @@
-import express from "express";
+import express, { type Router } from "express";
 
 import { applyMiddlewares } from "./config/middleware-config";
-import { registerRoutes } from "./shared/routes/index";
 
-export function createApp() {
+export function createApp(v1ModulesRouter: Router): express.Express {
   const app = express();
 
   applyMiddlewares(app);
-  registerRoutes(app);
+  app.use("/api/v1", v1ModulesRouter);
 
   return app;
 }
