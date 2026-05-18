@@ -29,6 +29,9 @@
  *         description: Validation error
  */
 
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor0 = undefined;
+
 /**
  * @openapi
  * /refresh-tokens/revoke:
@@ -47,6 +50,9 @@
  *       400:
  *         description: Validation error
  */
+
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor1 = undefined;
 
 /**
  * @openapi
@@ -81,4 +87,5 @@
  *         description: Not found
  */
 
-export {};
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor2 = undefined;

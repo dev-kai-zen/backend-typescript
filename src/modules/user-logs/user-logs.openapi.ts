@@ -29,4 +29,5 @@
  *         description: Validation error
  */
 
-export {};
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor0 = undefined;

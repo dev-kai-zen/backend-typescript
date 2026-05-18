@@ -13,10 +13,11 @@ RUN npm run build
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
-
 COPY package.json package-lock.json ./
+# `sequelize-cli` is devDependency — install CLI after prod deps; avoid NODE_ENV=production until this finishes.
 RUN npm ci --omit=dev && npm install sequelize-cli --no-save
+
+ENV NODE_ENV=production
 
 COPY --from=builder /app/dist ./dist
 COPY database ./database

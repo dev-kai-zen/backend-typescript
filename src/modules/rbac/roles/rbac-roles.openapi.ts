@@ -29,6 +29,9 @@
  *         description: Validation error
  */
 
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor0 = undefined;
+
 /**
  * @openapi
  * /rbac/roles/{id}/permissions:
@@ -96,6 +99,9 @@
  *         description: Role not found
  */
 
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor1 = undefined;
+
 /**
  * @openapi
  * /rbac/roles/{id}/permissions/{permissionId}:
@@ -119,6 +125,9 @@
  *       404:
  *         description: Not found
  */
+
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor2 = undefined;
 
 /**
  * @openapi
@@ -176,4 +185,5 @@
  *         description: Not found
  */
 
-export {};
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor3 = undefined;

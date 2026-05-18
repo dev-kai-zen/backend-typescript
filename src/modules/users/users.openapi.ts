@@ -40,6 +40,9 @@
  *         description: Duplicate email or googleId
  */
 
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor0 = undefined;
+
 /**
  * @openapi
  * /users/{id}:
@@ -100,4 +103,5 @@
  *         description: Not found
  */
 
-export {};
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor1 = undefined;

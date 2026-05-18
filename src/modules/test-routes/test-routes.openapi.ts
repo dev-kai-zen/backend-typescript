@@ -23,6 +23,9 @@
  *                   type: string
  */
 
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor0 = undefined;
+
 /**
  * @openapi
  * /test/health:
@@ -40,6 +43,9 @@
  *                 status:
  *                   type: string
  */
+
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor1 = undefined;
 
 /**
  * @openapi
@@ -73,6 +79,9 @@
  *         description: Missing/invalid Bearer token or inactive user
  */
 
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor2 = undefined;
+
 /**
  * @openapi
  * /test/protected/by-jwt-role:
@@ -99,6 +108,9 @@
  *       403:
  *         description: Authenticated but required role missing from JWT
  */
+
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor3 = undefined;
 
 /**
  * @openapi
@@ -127,4 +139,5 @@
  *         description: Forbidden (no `authUser`) or permission not granted for this user in DB
  */
 
-export {};
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor4 = undefined;

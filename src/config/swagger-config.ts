@@ -3,7 +3,11 @@ import path from "node:path";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
-/** Resolve `.ts` (tsx) vs `.js` (`node dist`) so JSDoc is picked up in dev and production. */
+/**
+ * Paths consumed by swagger-jsdoc. Each "*.openapi.ts" file exports `openapiDocAnchorN`
+ * sentinels so `tsc` keeps `@openapi` JSDoc in the emitted "*.openapi.js" files. A bare
+ * `export {}` previously dropped those comments, which left Swagger UI empty in production.
+ */
 function routeDocGlobs(): string[] {
   const ext = __filename.endsWith(".ts") ? "ts" : "js";
   const root = path.join(__dirname, "..");

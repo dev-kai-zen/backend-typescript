@@ -64,6 +64,9 @@
  *         description: User not found
  */
 
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor0 = undefined;
+
 /**
  * @openapi
  * /rbac/users/{userId}/roles/{roleId}:
@@ -88,4 +91,5 @@
  *         description: Not found
  */
 
-export {};
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor1 = undefined;

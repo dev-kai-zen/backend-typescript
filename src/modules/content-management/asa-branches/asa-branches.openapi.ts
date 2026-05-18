@@ -81,6 +81,9 @@
  *         description: Server error
  */
 
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor0 = undefined;
+
 /**
  * @openapi
  * /content-management/asa-branches/{id}:
@@ -172,4 +175,5 @@
  *         description: Server error
  */
 
-export {};
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor1 = undefined;

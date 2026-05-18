@@ -30,6 +30,9 @@
  *         description: Invalid Google token
  */
 
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor0 = undefined;
+
 /**
  * @openapi
  * /google-auth/refresh:
@@ -43,6 +46,9 @@
  *         description: Missing or invalid refresh cookie
  */
 
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor1 = undefined;
+
 /**
  * @openapi
  * /google-auth/logout:
@@ -53,6 +59,9 @@
  *       200:
  *         description: OK
  */
+
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor2 = undefined;
 
 /**
  * @openapi
@@ -69,4 +78,5 @@
  *         description: Unauthorized
  */
 
-export {};
+/** Binds the preceding `@openapi` block into emitted `.js` for swagger-jsdoc. */
+export const openapiDocAnchor3 = undefined;
