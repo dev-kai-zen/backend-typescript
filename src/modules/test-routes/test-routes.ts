@@ -13,13 +13,21 @@ import routesGuard from "../../shared/middlewares/routes-guard";
 export const testRoutes = Router();
 
 testRoutes.get("/", (_req, res) => {
-  sendSuccess(res, { service: "backend-typescript" }, {
-    message: "backend-typescript APIs",
-  });
+  sendSuccess(
+    res,
+    { service: "backend-typescript" },
+    {
+      message: "backend-typescript APIsss",
+    },
+  );
 });
 
 testRoutes.get("/health", (_req, res) => {
-  sendSuccess(res, { status: "API is running" }, { message: "Health check OK" });
+  sendSuccess(
+    res,
+    { status: "API is running" },
+    { message: "Health check OK" },
+  );
 });
 
 /** Valid Bearer access JWT only (`authenticateJwt`). */

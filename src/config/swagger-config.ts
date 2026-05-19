@@ -35,6 +35,21 @@ export function setupSwagger(app: Express): void {
             bearerFormat: "JWT",
           },
         },
+        schemas: {
+          ApiEnvelope: {
+            type: "object",
+            required: ["status", "message", "data"],
+            properties: {
+              status: {
+                type: "boolean",
+                description:
+                  "true when the request succeeded, false on validation or server errors",
+              },
+              message: { type: "string" },
+              data: { nullable: true },
+            },
+          },
+        },
       },
     },
     apis: routeDocGlobs(),
