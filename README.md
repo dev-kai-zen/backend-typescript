@@ -70,7 +70,10 @@ Point `DATABASE_URL` at your instance. Create an empty database first, then use 
 ```bash
 npm install
 npm run migration:up
+npm test
 ```
+
+Tests use [Vitest](https://vitest.dev/) and [Supertest](https://github.com/ladjs/supertest). Unit tests cover shared helpers (validation, JWT, route params); integration tests hit sample `/api/v1/test` routes without starting MySQL. `npm run test:watch` re-runs on file changes.
 
 Migrations live in `database/migrations/` and create users, RBAC, refresh tokens, audit logs, and the sample **ASA** content-management tables. Details: [docs/db-migrations.md](docs/db-migrations.md).
 
@@ -139,15 +142,34 @@ See [docs/deployment-guide.md](docs/deployment-guide.md) for health checks, port
 
 | Topic | File |
 |-------|------|
+| How to create a test file (junior guide) | [docs/how-to-create-test-file.md](docs/how-to-create-test-file.md) |
 | Migrations (create, up, down, status) | [docs/db-migrations.md](docs/db-migrations.md) |
 | Docker deploy and migrate workflow | [docs/deployment-guide.md](docs/deployment-guide.md) |
 | Git workflow reference | [docs/git-commands.md](docs/git-commands.md) |
 
 ---
 
+## Tests
+
+```bash
+npm test          # single run
+npm run test:watch
+```
+
+| Area | Location |
+|------|----------|
+| Unit (validation, JWT, route params) | `src/**/*.test.ts` |
+| HTTP integration (sample test routes) | `tests/integration/` |
+| Env defaults for CI/local | `tests/setup.ts` |
+
+Add colocated `*.test.ts` files next to new shared code, or integration tests under `tests/` using `createTestApp()` in `tests/helpers/create-test-app.ts`. See **[docs/how-to-create-test-file.md](docs/how-to-create-test-file.md)** for a full walkthrough.
+
+---
+
 ## Stack (reference)
 
 - **Runtime:** Node 22, TypeScript, Express 5
+- **Tests:** Vitest, Supertest
 - **DB:** MySQL 8, Sequelize 6, Sequelize CLI migrations
 - **Auth:** Google ID token verification, JWT access + refresh cookies
 - **API docs:** swagger-jsdoc + swagger-ui-express
