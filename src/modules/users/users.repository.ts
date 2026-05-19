@@ -53,6 +53,16 @@ export async function getUser(id: number): Promise<User | null> {
   return User.findByPk(id);
 }
 
+export async function findUserByGoogleId(
+  googleId: string,
+): Promise<User | null> {
+  return User.findOne({ where: { google_id: googleId } });
+}
+
+export async function findUserByEmail(email: string): Promise<User | null> {
+  return User.findOne({ where: { email } });
+}
+
 export async function updateUser(
   id: number,
   data: Partial<{

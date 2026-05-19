@@ -14,18 +14,17 @@ export async function createRole(
   },
   options: DbOptions = {},
 ): Promise<Role> {
-  return withTransaction(async (opts) => {
-    if (!data.roleName || data.roleName.trim() === "") {
-      throw new Error("roleName is required");
-    }
-    return rolesRepository.createRole(
-      {
-        roleName: data.roleName.trim(),
-        roleDescription: data.roleDescription ?? null,
-      },
-      opts,
-    );
-  }, options);
+  return withTransaction(
+    (opts) =>
+      rolesRepository.createRole(
+        {
+          roleName: data.roleName,
+          roleDescription: data.roleDescription ?? null,
+        },
+        opts,
+      ),
+    options,
+  );
 }
 
 export async function getRole(id: number): Promise<Role | null> {
@@ -41,32 +40,10 @@ export async function updateRole(
   },
   options: DbOptions = {},
 ): Promise<Role | null> {
-  return withTransaction(async (opts) => {
-    if (
-      data.roleName !== undefined &&
-      (typeof data.roleName !== "string" || data.roleName.trim() === "")
-    ) {
-      throw new Error("roleName cannot be empty");
-    }
-    const patch: {
-      roleName?: string;
-      roleDescription?: string | null;
-      isActive?: boolean;
-    } = {};
-    if (data.roleName !== undefined) {
-      patch.roleName = data.roleName.trim();
-    }
-    if (data.roleDescription !== undefined) {
-      patch.roleDescription = data.roleDescription;
-    }
-    if (data.isActive !== undefined) {
-      patch.isActive = data.isActive;
-    }
-    if (Object.keys(patch).length === 0) {
-      throw new Error("No fields to update");
-    }
-    return rolesRepository.updateRole(id, patch, opts);
-  }, options);
+  return withTransaction(
+    (opts) => rolesRepository.updateRole(id, data, opts),
+    options,
+  );
 }
 
 export async function deleteRole(

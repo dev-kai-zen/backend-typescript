@@ -1,7 +1,12 @@
 import type { Request, Response } from "express";
-import { ForeignKeyConstraintError, UniqueConstraintError } from "sequelize";
 
-import { formatZodError } from "../../../shared/validation/format-zod-error";
+import {
+  sendError,
+  sendSuccess,
+  sendValidationError,
+} from "../../../shared/http/api-response";
+import { handleControllerError } from "../../../shared/http/handle-controller-error";
+import { parseRouteId } from "../../../shared/http/parse-route-id";
 import {
   createRolePermissionBodySchema,
   setRolePermissionsBodySchema,
@@ -12,19 +17,21 @@ export async function listRolePermissions(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const raw = req.params.id;
-  const roleId =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(roleId)) {
-    res.status(400).json({ message: "Invalid role id" });
+  const roleId = parseRouteId(req.params.id);
+  if (roleId === null) {
+    sendError(res, 400, "Invalid role id");
     return;
   }
   try {
     const rows = await rbacRolePermissionsService.listRolePermissions(roleId);
-    res.json({ data: rows });
+    sendSuccess(res, rows, { message: "Role permissions listed successfully" });
   } catch (err) {
-    console.error("listRolePermissions:", err);
-    res.status(500).json({ message: "Failed to list role permissions" });
+    handleControllerError(
+      res,
+      err,
+      "listRolePermissions",
+      "Failed to list role permissions",
+    );
   }
 }
 
@@ -32,16 +39,14 @@ export async function setRolePermissions(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const raw = req.params.id;
-  const roleId =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(roleId)) {
-    res.status(400).json({ message: "Invalid role id" });
+  const roleId = parseRouteId(req.params.id);
+  if (roleId === null) {
+    sendError(res, 400, "Invalid role id");
     return;
   }
   const parsed = setRolePermissionsBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
@@ -50,23 +55,17 @@ export async function setRolePermissions(
       parsed.data.permissionIds,
     );
     if (!rows) {
-      res.status(404).json({ message: "Role not found" });
+      sendError(res, 404, "Role not found");
       return;
     }
-    res.json({ data: rows });
+    sendSuccess(res, rows, { message: "Role permissions updated successfully" });
   } catch (err) {
-    console.error("setRolePermissions:", err);
-    if (err instanceof ForeignKeyConstraintError) {
-      res.status(400).json({
-        message: "One or more permission ids do not exist",
-      });
-      return;
-    }
-    if (err instanceof UniqueConstraintError) {
-      res.status(409).json({ message: "Duplicate permission id in request" });
-      return;
-    }
-    res.status(500).json({ message: "Failed to set role permissions" });
+    handleControllerError(
+      res,
+      err,
+      "setRolePermissions",
+      "Failed to set role permissions",
+    );
   }
 }
 
@@ -74,16 +73,14 @@ export async function createRolePermission(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const raw = req.params.id;
-  const roleId =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(roleId)) {
-    res.status(400).json({ message: "Invalid role id" });
+  const roleId = parseRouteId(req.params.id);
+  if (roleId === null) {
+    sendError(res, 400, "Invalid role id");
     return;
   }
   const parsed = createRolePermissionBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
@@ -91,16 +88,17 @@ export async function createRolePermission(
       roleId,
       permissionId: parsed.data.permissionId,
     });
-    res.status(201).json(row);
+    sendSuccess(res, row, {
+      httpStatus: 201,
+      message: "Permission assigned to role successfully",
+    });
   } catch (err) {
-    console.error("createRolePermission:", err);
-    if (err instanceof UniqueConstraintError) {
-      res
-        .status(409)
-        .json({ message: "This permission is already assigned to the role" });
-      return;
-    }
-    res.status(500).json({ message: "Failed to assign permission to role" });
+    handleControllerError(
+      res,
+      err,
+      "createRolePermission",
+      "Failed to assign permission to role",
+    );
   }
 }
 
@@ -108,18 +106,10 @@ export async function deleteRolePermission(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const rawRoleId = req.params.id;
-  const rawPermId = req.params.permissionId;
-  const roleId =
-    typeof rawRoleId === "string"
-      ? Number.parseInt(rawRoleId, 10)
-      : Number.NaN;
-  const permissionId =
-    typeof rawPermId === "string"
-      ? Number.parseInt(rawPermId, 10)
-      : Number.NaN;
-  if (!Number.isFinite(roleId) || !Number.isFinite(permissionId)) {
-    res.status(400).json({ message: "Invalid role id or permissionId" });
+  const roleId = parseRouteId(req.params.id);
+  const permissionId = parseRouteId(req.params.permissionId);
+  if (roleId === null || permissionId === null) {
+    sendError(res, 400, "Invalid role id or permissionId");
     return;
   }
   try {
@@ -128,12 +118,16 @@ export async function deleteRolePermission(
       permissionId,
     );
     if (!deleted) {
-      res.status(404).json({ message: "Role permission link not found" });
+      sendError(res, 404, "Role permission link not found");
       return;
     }
-    res.status(204).send();
+    sendSuccess(res, null, { message: "Role permission removed successfully" });
   } catch (err) {
-    console.error("deleteRolePermission:", err);
-    res.status(500).json({ message: "Failed to remove role permission" });
+    handleControllerError(
+      res,
+      err,
+      "deleteRolePermission",
+      "Failed to remove role permission",
+    );
   }
 }

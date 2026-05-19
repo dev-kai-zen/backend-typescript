@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
 
+import { sendSuccess } from "../../shared/http/api-response";
+import { handleControllerError } from "../../shared/http/handle-controller-error";
 import * as auditLogsService from "./audit-logs.service";
 
 export async function listAuditLogs(req: Request, res: Response): Promise<void> {
@@ -35,11 +37,8 @@ export async function listAuditLogs(req: Request, res: Response): Promise<void> 
       { limit, offset },
     );
 
-    res.json({ data: logs });
+    sendSuccess(res, logs, { message: "Audit logs listed successfully" });
   } catch (err) {
-    console.error("listAuditLogs:", err);
-    res.status(500).json({
-      message: "Failed to list audit logs",
-    });
+    handleControllerError(res, err, "listAuditLogs", "Failed to list audit logs");
   }
 }

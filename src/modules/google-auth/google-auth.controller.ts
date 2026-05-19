@@ -1,7 +1,14 @@
 import type { Request, Response } from "express";
 
 import { env } from "../../config/env-config";
+import {
+  sendError,
+  sendSuccess,
+  sendValidationError,
+} from "../../shared/http/api-response";
+import { handleControllerError } from "../../shared/http/handle-controller-error";
 import { buildUserPayload } from "./google-auth.payload";
+import { googleLoginBodySchema } from "./google-auth.schemas";
 import {
   getMe,
   loginWithGoogleIdToken,
@@ -27,41 +34,33 @@ function clearRefreshCookie(res: Response): void {
 }
 
 export async function login(req: Request, res: Response): Promise<void> {
-  try {
-    const body = req.body as { googleToken?: unknown };
-    const googleToken = body.googleToken;
-    if (typeof googleToken !== "string" || googleToken.trim() === "") {
-      res
-        .status(400)
-        .json({ success: false, message: "Google Token is required" });
-      return;
-    }
+  const parsed = googleLoginBodySchema.safeParse(req.body);
+  if (!parsed.success) {
+    sendValidationError(res, parsed.error);
+    return;
+  }
 
-    const { accessToken, refreshToken, user } =
-      await loginWithGoogleIdToken(googleToken);
+  try {
+    const { accessToken, refreshToken, user } = await loginWithGoogleIdToken(
+      parsed.data.googleToken,
+    );
 
     res.cookie(REFRESH_COOKIE_NAME, refreshToken, {
       ...refreshCookieBase(),
       maxAge: REFRESH_COOKIE_MAX_MS,
     });
 
-    res.json({
-      success: true,
-      message: "Login successful",
-      data: {
+    sendSuccess(
+      res,
+      {
         accessToken,
         user: buildUserPayload(user),
         permissions: [] as string[],
       },
-    });
+      { message: "Login successful" },
+    );
   } catch (err) {
-    const e = err as Error & { statusCode?: number };
-    if (e.statusCode != null) {
-      res.status(e.statusCode).json({ success: false, message: e.message });
-      return;
-    }
-    console.error("google-auth login:", err);
-    res.status(500).json({ success: false, message: "Login failed" });
+    handleControllerError(res, err, "google-auth login", "Login failed");
   }
 }
 
@@ -70,60 +69,50 @@ export async function refresh(req: Request, res: Response): Promise<void> {
     const raw = req.cookies?.[REFRESH_COOKIE_NAME];
     if (typeof raw !== "string" || raw.trim() === "") {
       clearRefreshCookie(res);
-      res.status(401).json({ success: false, message: "Not authenticated" });
+      sendError(res, 401, "Not authenticated");
       return;
     }
 
     const accessToken = await refreshAccessToken(raw);
-    res.json({
-      success: true,
-      message: "Token refreshed",
-      data: { accessToken },
-    });
+    sendSuccess(res, { accessToken }, { message: "Token refreshed" });
   } catch (err) {
     clearRefreshCookie(res);
-    const e = err as Error & { statusCode?: number };
-    if (e.statusCode != null) {
-      res.status(e.statusCode).json({ success: false, message: e.message });
-      return;
-    }
-    console.error("google-auth refresh:", err);
-    res.status(401).json({ success: false, message: "Not authenticated" });
+    handleControllerError(
+      res,
+      err,
+      "google-auth refresh",
+      "Not authenticated",
+    );
   }
 }
 
 export async function logout(_req: Request, res: Response): Promise<void> {
   clearRefreshCookie(res);
-  res.json({
-    success: true,
-    message: "Logged out successfully",
-    data: {},
-  });
+  sendSuccess(res, null, { message: "Logged out successfully" });
 }
 
 export async function me(req: Request, res: Response): Promise<void> {
   try {
     const user = req.authUser;
     if (!user?.id) {
-      res.status(401).json({ success: false, message: "Unauthorized" });
+      sendError(res, 401, "Unauthorized");
       return;
     }
     const fresh = await getMe(user.id);
-    res.json({
-      success: true,
-      message: "User details fetched",
-      data: {
+    sendSuccess(
+      res,
+      {
         user: buildUserPayload(fresh.user),
         permissions: fresh.permissions,
       },
-    });
+      { message: "User details fetched" },
+    );
   } catch (err) {
-    const e = err as Error & { statusCode?: number };
-    if (e.statusCode != null) {
-      res.status(e.statusCode).json({ success: false, message: e.message });
-      return;
-    }
-    console.error("google-auth me:", err);
-    res.status(500).json({ success: false, message: "Failed to load profile" });
+    handleControllerError(
+      res,
+      err,
+      "google-auth me",
+      "Failed to load profile",
+    );
   }
 }

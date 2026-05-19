@@ -17,19 +17,18 @@ export async function createRefreshToken(
   input: CreateRefreshTokenInput,
   options: DbOptions = {},
 ): Promise<RefreshToken> {
-  return withTransaction(async (opts) => {
-    if (Number.isNaN(input.expiresAt.getTime())) {
-      throw new Error("expiresAt is invalid");
-    }
-    return refreshTokenRepository.createRefreshToken(
-      {
-        userId: input.userId,
-        token: input.token.trim(),
-        expiresAt: input.expiresAt,
-      },
-      opts,
-    );
-  }, options);
+  return withTransaction(
+    (opts) =>
+      refreshTokenRepository.createRefreshToken(
+        {
+          userId: input.userId,
+          token: input.token.trim(),
+          expiresAt: input.expiresAt,
+        },
+        opts,
+      ),
+    options,
+  );
 }
 
 export async function getRefreshToken(

@@ -17,19 +17,18 @@ export async function createPermission(
   },
   options: DbOptions = {},
 ): Promise<RbacPermission> {
-  return withTransaction(async (opts) => {
-    if (!data.permissionCode || data.permissionCode.trim() === "") {
-      throw new Error("permissionCode is required");
-    }
-    return rbacPermissionsRepository.createPermission(
-      {
-        permissionCode: data.permissionCode.trim(),
-        permissionDescription: data.permissionDescription ?? null,
-        categoryId: data.categoryId ?? null,
-      },
-      opts,
-    );
-  }, options);
+  return withTransaction(
+    (opts) =>
+      rbacPermissionsRepository.createPermission(
+        {
+          permissionCode: data.permissionCode,
+          permissionDescription: data.permissionDescription ?? null,
+          categoryId: data.categoryId ?? null,
+        },
+        opts,
+      ),
+    options,
+  );
 }
 
 export async function getPermission(
@@ -48,37 +47,10 @@ export async function updatePermission(
   },
   options: DbOptions = {},
 ): Promise<RbacPermission | null> {
-  return withTransaction(async (opts) => {
-    if (
-      data.permissionCode !== undefined &&
-      (typeof data.permissionCode !== "string" ||
-        data.permissionCode.trim() === "")
-    ) {
-      throw new Error("permissionCode cannot be empty");
-    }
-    const patch: {
-      permissionCode?: string;
-      permissionDescription?: string | null;
-      categoryId?: number | null;
-      isActive?: boolean;
-    } = {};
-    if (data.permissionCode !== undefined) {
-      patch.permissionCode = data.permissionCode.trim();
-    }
-    if (data.permissionDescription !== undefined) {
-      patch.permissionDescription = data.permissionDescription;
-    }
-    if (data.categoryId !== undefined) {
-      patch.categoryId = data.categoryId;
-    }
-    if (data.isActive !== undefined) {
-      patch.isActive = data.isActive;
-    }
-    if (Object.keys(patch).length === 0) {
-      throw new Error("No fields to update");
-    }
-    return rbacPermissionsRepository.updatePermission(id, patch, opts);
-  }, options);
+  return withTransaction(
+    (opts) => rbacPermissionsRepository.updatePermission(id, data, opts),
+    options,
+  );
 }
 
 export async function deletePermission(

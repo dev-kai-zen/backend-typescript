@@ -1,6 +1,6 @@
 import { withTransaction } from "../../../shared/db/with-transaction";
 import type { DbOptions } from "../../../shared/types/db-options";
-import * as asaDivisionsRepository from "../asa-divisions/asa-divisions.repository";
+import * as asaDivisionsService from "../asa-divisions/asa-divisions.service";
 import type { AsaRegion } from "./asa-regions.model";
 import * as asaRegionsRepository from "./asa-regions.repository";
 
@@ -13,17 +13,7 @@ export async function createAsaRegion(
   options: DbOptions = {},
 ): Promise<AsaRegion> {
   return withTransaction(async (opts) => {
-    if (!data.regionName || data.regionName.trim() === "") {
-      throw new Error("regionName is required");
-    }
-    if (
-      !Number.isFinite(data.asaDivisionId) ||
-      data.asaDivisionId < 1 ||
-      !Number.isInteger(data.asaDivisionId)
-    ) {
-      throw new Error("asaDivisionId must be a positive integer");
-    }
-    const division = await asaDivisionsRepository.getAsaDivision(
+    const division = await asaDivisionsService.getAsaDivision(
       data.asaDivisionId,
     );
     if (!division) {
@@ -31,13 +21,7 @@ export async function createAsaRegion(
         "asaDivisionId does not reference an existing ASA division",
       );
     }
-    return asaRegionsRepository.createAsaRegion(
-      {
-        regionName: data.regionName.trim(),
-        asaDivisionId: data.asaDivisionId,
-      },
-      opts,
-    );
+    return asaRegionsRepository.createAsaRegion(data, opts);
   }, options);
 }
 
@@ -51,17 +35,7 @@ export async function updateAsaRegion(
   options: DbOptions = {},
 ): Promise<AsaRegion | null> {
   return withTransaction(async (opts) => {
-    if (!data.regionName || data.regionName.trim() === "") {
-      throw new Error("regionName is required");
-    }
-    if (
-      !Number.isFinite(data.asaDivisionId) ||
-      data.asaDivisionId < 1 ||
-      !Number.isInteger(data.asaDivisionId)
-    ) {
-      throw new Error("asaDivisionId must be a positive integer");
-    }
-    const division = await asaDivisionsRepository.getAsaDivision(
+    const division = await asaDivisionsService.getAsaDivision(
       data.asaDivisionId,
     );
     if (!division) {
@@ -69,14 +43,7 @@ export async function updateAsaRegion(
         "asaDivisionId does not reference an existing ASA division",
       );
     }
-    return asaRegionsRepository.updateAsaRegion(
-      id,
-      {
-        regionName: data.regionName.trim(),
-        asaDivisionId: data.asaDivisionId,
-      },
-      opts,
-    );
+    return asaRegionsRepository.updateAsaRegion(id, data, opts);
   }, options);
 }
 

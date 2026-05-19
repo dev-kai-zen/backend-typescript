@@ -11,15 +11,10 @@ export async function createAsaOperation(
   data: { operationName: string },
   options: DbOptions = {},
 ): Promise<AsaOperation> {
-  return withTransaction(async (opts) => {
-    if (!data.operationName || data.operationName.trim() === "") {
-      throw new Error("operationName is required");
-    }
-    return asaOperationsRepository.createAsaOperation(
-      { operationName: data.operationName.trim() },
-      opts,
-    );
-  }, options);
+  return withTransaction(
+    (opts) => asaOperationsRepository.createAsaOperation(data, opts),
+    options,
+  );
 }
 
 export async function getAsaOperation(
@@ -33,16 +28,10 @@ export async function updateAsaOperation(
   data: { operationName: string },
   options: DbOptions = {},
 ): Promise<AsaOperation | null> {
-  return withTransaction(async (opts) => {
-    if (!data.operationName || data.operationName.trim() === "") {
-      throw new Error("operationName is required");
-    }
-    return asaOperationsRepository.updateAsaOperation(
-      id,
-      { operationName: data.operationName.trim() },
-      opts,
-    );
-  }, options);
+  return withTransaction(
+    (opts) => asaOperationsRepository.updateAsaOperation(id, data, opts),
+    options,
+  );
 }
 
 export async function deleteAsaOperation(

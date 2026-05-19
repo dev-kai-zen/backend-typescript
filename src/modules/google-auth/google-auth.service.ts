@@ -1,7 +1,7 @@
 import { OAuth2Client } from "google-auth-library";
 
 import { env } from "../../config/env-config";
-import { User } from "../users/users.model";
+import type { User } from "../users/users.model";
 import * as usersService from "../users/users.service";
 import * as rbacUserRoleService from "../rbac/user-roles/rbac-user-roles.service";
 import * as rbacRolePermissionsService from "../rbac/role-permissions/rbac-role-permissions.service";
@@ -63,10 +63,9 @@ export async function loginWithGoogleIdToken(googleToken: string): Promise<{
   const fullName = payload.name ?? null;
   const pictureUrl = payload.picture ?? null;
 
-  let user = await User.findOne({ where: { google_id: googleId } });
-  if (!user) {
-    user = await User.findOne({ where: { email } });
-  }
+  let user =
+    (await usersService.findUserByGoogleId(googleId)) ??
+    (await usersService.findUserByEmail(email));
 
   if (!user) {
     user = await usersService.createUser({
@@ -77,19 +76,18 @@ export async function loginWithGoogleIdToken(googleToken: string): Promise<{
       isActive: true,
     });
   } else {
-    await usersService.updateUser(user.id, {
+    const updated = await usersService.updateUser(user.id, {
       googleId: user.google_id ?? googleId,
       fullName: fullName ?? user.full_name,
       pictureUrl: pictureUrl ?? user.picture_url,
       lastLoginAt: new Date(),
     });
-    const reloaded = await User.findByPk(user.id);
-    if (!reloaded) {
+    if (!updated) {
       const err = new Error("User not found after update");
       (err as Error & { statusCode?: number }).statusCode = 500;
       throw err;
     }
-    user = reloaded;
+    user = updated;
   }
 
   if (!user.is_active) {
@@ -118,7 +116,7 @@ export async function refreshAccessToken(
     throw err;
   }
 
-  const user = await User.findByPk(userId);
+  const user = await usersService.getUser(userId);
   if (!user || !user.is_active) {
     const err = new Error("Unauthorized");
     (err as Error & { statusCode?: number }).statusCode = 401;

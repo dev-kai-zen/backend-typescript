@@ -1,7 +1,12 @@
 import type { Request, Response } from "express";
-import { ForeignKeyConstraintError } from "sequelize";
 
-import { formatZodError } from "../../../shared/validation/format-zod-error";
+import {
+  sendError,
+  sendSuccess,
+  sendValidationError,
+} from "../../../shared/http/api-response";
+import { handleControllerError } from "../../../shared/http/handle-controller-error";
+import { parseRouteId } from "../../../shared/http/parse-route-id";
 import {
   createAsaDivisionBodySchema,
   updateAsaDivisionBodySchema,
@@ -14,10 +19,14 @@ export async function listAsaDivisions(
 ): Promise<void> {
   try {
     const rows = await asaDivisionsService.listAsaDivisions();
-    res.json({ data: rows });
+    sendSuccess(res, rows, { message: "ASA divisions listed successfully" });
   } catch (err) {
-    console.error("listAsaDivisions:", err);
-    res.status(500).json({ message: "Failed to list ASA divisions" });
+    handleControllerError(
+      res,
+      err,
+      "listAsaDivisions",
+      "Failed to list ASA divisions",
+    );
   }
 }
 
@@ -27,44 +36,48 @@ export async function createAsaDivision(
 ): Promise<void> {
   const parsed = createAsaDivisionBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
     const row = await asaDivisionsService.createAsaDivision(parsed.data);
-    res.status(201).json(row);
+    sendSuccess(res, row, {
+      httpStatus: 201,
+      message: "ASA division created successfully",
+    });
   } catch (err) {
-    console.error("createAsaDivision:", err);
-    if (err instanceof ForeignKeyConstraintError) {
-      res.status(400).json({ message: "Invalid asaOperationId" });
-      return;
-    }
-    if (err instanceof Error) {
-      res.status(400).json({ message: err.message });
-      return;
-    }
-    res.status(500).json({ message: "Failed to create ASA division" });
+    handleControllerError(
+      res,
+      err,
+      "createAsaDivision",
+      "Failed to create ASA division",
+    );
   }
 }
 
-export async function getAsaDivision(req: Request, res: Response): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+export async function getAsaDivision(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   try {
     const row = await asaDivisionsService.getAsaDivision(id);
     if (!row) {
-      res.status(404).json({ message: "ASA division not found" });
+      sendError(res, 404, "ASA division not found");
       return;
     }
-    res.json(row);
+    sendSuccess(res, row, { message: "ASA division fetched successfully" });
   } catch (err) {
-    console.error("getAsaDivision:", err);
-    res.status(500).json({ message: "Failed to get ASA division" });
+    handleControllerError(
+      res,
+      err,
+      "getAsaDivision",
+      "Failed to get ASA division",
+    );
   }
 }
 
@@ -72,36 +85,30 @@ export async function updateAsaDivision(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   const parsed = updateAsaDivisionBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
     const row = await asaDivisionsService.updateAsaDivision(id, parsed.data);
     if (!row) {
-      res.status(404).json({ message: "ASA division not found" });
+      sendError(res, 404, "ASA division not found");
       return;
     }
-    res.json(row);
+    sendSuccess(res, row, { message: "ASA division updated successfully" });
   } catch (err) {
-    console.error("updateAsaDivision:", err);
-    if (err instanceof ForeignKeyConstraintError) {
-      res.status(400).json({ message: "Invalid asaOperationId" });
-      return;
-    }
-    if (err instanceof Error) {
-      res.status(400).json({ message: err.message });
-      return;
-    }
-    res.status(500).json({ message: "Failed to update ASA division" });
+    handleControllerError(
+      res,
+      err,
+      "updateAsaDivision",
+      "Failed to update ASA division",
+    );
   }
 }
 
@@ -109,22 +116,24 @@ export async function deleteAsaDivision(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   try {
     const deleted = await asaDivisionsService.deleteAsaDivision(id);
     if (!deleted) {
-      res.status(404).json({ message: "ASA division not found" });
+      sendError(res, 404, "ASA division not found");
       return;
     }
-    res.status(204).send();
+    sendSuccess(res, null, { message: "ASA division deleted successfully" });
   } catch (err) {
-    console.error("deleteAsaDivision:", err);
-    res.status(500).json({ message: "Failed to delete ASA division" });
+    handleControllerError(
+      res,
+      err,
+      "deleteAsaDivision",
+      "Failed to delete ASA division",
+    );
   }
 }

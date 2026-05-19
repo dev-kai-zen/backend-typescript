@@ -1,5 +1,6 @@
 import { Router } from "express";
 
+import { sendSuccess } from "../../shared/http/api-response";
 import { authenticateJwt } from "../../shared/middlewares/auth-middleware";
 import routesGuard from "../../shared/middlewares/routes-guard";
 
@@ -12,22 +13,28 @@ import routesGuard from "../../shared/middlewares/routes-guard";
 export const testRoutes = Router();
 
 testRoutes.get("/", (_req, res) => {
-  res.json({ message: "backend-typescript APIs" });
+  sendSuccess(res, { service: "backend-typescript" }, {
+    message: "backend-typescript APIs",
+  });
 });
 
 testRoutes.get("/health", (_req, res) => {
-  res.json({ status: "API is running" });
+  sendSuccess(res, { status: "API is running" }, { message: "Health check OK" });
 });
 
 /** Valid Bearer access JWT only (`authenticateJwt`). */
 testRoutes.get("/protected/me", authenticateJwt, (req, res) => {
   const user = req.authUser!;
-  res.json({
-    userId: user.id,
-    email: user.email,
-    rolesFromJwt: req.roles ?? [],
-    permissionsFromJwt: req.permissions ?? [],
-  });
+  sendSuccess(
+    res,
+    {
+      userId: user.id,
+      email: user.email,
+      rolesFromJwt: req.roles ?? [],
+      permissionsFromJwt: req.permissions ?? [],
+    },
+    { message: "Authenticated profile from JWT" },
+  );
 });
 
 /** JWT + guard using role names embedded in the access token (`source: "token"`). */
@@ -35,12 +42,11 @@ testRoutes.get(
   "/protected/by-jwt-role",
   authenticateJwt,
   routesGuard({
-    // Replace with a real `rbac_roles.role_name` your user has.
     roles: ["admin"],
     source: "token",
   }),
   (_req, res) => {
-    res.json({ message: "OK — JWT contained a matching role" });
+    sendSuccess(res, null, { message: "OK — JWT contained a matching role" });
   },
 );
 
@@ -49,12 +55,11 @@ testRoutes.get(
   "/protected/by-db-permission",
   authenticateJwt,
   routesGuard({
-    // Replace with a real `rbac_permissions.permission_code` granted via role links.
     permissions: ["user:view"],
     source: "db",
   }),
   (_req, res) => {
-    res.json({
+    sendSuccess(res, null, {
       message: "OK — current DB RBAC grants the required permission code",
     });
   },

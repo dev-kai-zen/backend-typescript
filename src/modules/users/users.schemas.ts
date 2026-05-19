@@ -1,14 +1,22 @@
 import { z } from "zod";
 
-/** String or explicit null from JSON (`"field": null`). */
-const nullableString = z.union([z.string(), z.null()]);
+const nullableTrimmedString = z
+  .union([z.string(), z.null()])
+  .optional()
+  .transform((v) => {
+    if (v === undefined || v === null) {
+      return null;
+    }
+    const t = v.trim();
+    return t === "" ? null : t;
+  });
 
 export const createUserBodySchema = z
   .object({
-    email: z.string().min(1),
-    googleId: nullableString.optional(),
-    fullName: nullableString.optional(),
-    pictureUrl: nullableString.optional(),
+    email: z.string().trim().min(1, "email is required"),
+    googleId: nullableTrimmedString,
+    fullName: nullableTrimmedString,
+    pictureUrl: nullableTrimmedString,
     isActive: z.boolean().optional(),
   })
   .strict();
@@ -27,14 +35,13 @@ const lastLoginAtField = z
 
 export const updateUserBodySchema = z
   .object({
-    email: z.string().min(1),
-    googleId: nullableString,
-    fullName: nullableString,
-    pictureUrl: nullableString,
-    isActive: z.boolean(),
-    lastLoginAt: lastLoginAtField,
+    email: z.string().trim().min(1, "email cannot be empty").optional(),
+    googleId: nullableTrimmedString,
+    fullName: nullableTrimmedString,
+    pictureUrl: nullableTrimmedString,
+    isActive: z.boolean().optional(),
+    lastLoginAt: lastLoginAtField.optional(),
   })
-  .partial()
   .strict()
   .superRefine((data, ctx) => {
     if (Object.keys(data).length === 0) {

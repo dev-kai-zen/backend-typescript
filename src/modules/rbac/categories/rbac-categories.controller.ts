@@ -1,7 +1,12 @@
 import type { Request, Response } from "express";
-import { UniqueConstraintError } from "sequelize";
 
-import { formatZodError } from "../../../shared/validation/format-zod-error";
+import {
+  sendError,
+  sendSuccess,
+  sendValidationError,
+} from "../../../shared/http/api-response";
+import { handleControllerError } from "../../../shared/http/handle-controller-error";
+import { parseRouteId } from "../../../shared/http/parse-route-id";
 import {
   createCategoryBodySchema,
   updateCategoryBodySchema,
@@ -14,108 +19,84 @@ export async function listCategories(
 ): Promise<void> {
   try {
     const categories = await rbacCategoriesService.listCategories();
-    res.json({ data: categories });
+    sendSuccess(res, categories, { message: "Categories listed successfully" });
   } catch (err) {
-    console.error("listCategories:", err);
-    res.status(500).json({ message: "Failed to list categories" });
+    handleControllerError(res, err, "listCategories", "Failed to list categories");
   }
 }
 
 export async function createCategory(req: Request, res: Response): Promise<void> {
   const parsed = createCategoryBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
     const row = await rbacCategoriesService.createCategory(parsed.data);
-    res.status(201).json(row);
+    sendSuccess(res, row, {
+      httpStatus: 201,
+      message: "Category created successfully",
+    });
   } catch (err) {
-    console.error("createCategory:", err);
-    if (err instanceof UniqueConstraintError) {
-      res.status(409).json({ message: "categoryName already exists" });
-      return;
-    }
-    if (err instanceof Error) {
-      res.status(400).json({ message: err.message });
-      return;
-    }
-    res.status(500).json({ message: "Failed to create category" });
+    handleControllerError(res, err, "createCategory", "Failed to create category");
   }
 }
 
 export async function getCategory(req: Request, res: Response): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   try {
     const row = await rbacCategoriesService.getCategory(id);
     if (!row) {
-      res.status(404).json({ message: "Category not found" });
+      sendError(res, 404, "Category not found");
       return;
     }
-    res.json(row);
+    sendSuccess(res, row, { message: "Category fetched successfully" });
   } catch (err) {
-    console.error("getCategory:", err);
-    res.status(500).json({ message: "Failed to get category" });
+    handleControllerError(res, err, "getCategory", "Failed to get category");
   }
 }
 
 export async function updateCategory(req: Request, res: Response): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   const parsed = updateCategoryBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
     const row = await rbacCategoriesService.updateCategory(id, parsed.data);
     if (!row) {
-      res.status(404).json({ message: "Category not found" });
+      sendError(res, 404, "Category not found");
       return;
     }
-    res.json(row);
+    sendSuccess(res, row, { message: "Category updated successfully" });
   } catch (err) {
-    console.error("updateCategory:", err);
-    if (err instanceof UniqueConstraintError) {
-      res.status(409).json({ message: "categoryName already exists" });
-      return;
-    }
-    if (err instanceof Error) {
-      res.status(400).json({ message: err.message });
-      return;
-    }
-    res.status(500).json({ message: "Failed to update category" });
+    handleControllerError(res, err, "updateCategory", "Failed to update category");
   }
 }
 
 export async function deleteCategory(req: Request, res: Response): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   try {
     const deleted = await rbacCategoriesService.deleteCategory(id);
     if (!deleted) {
-      res.status(404).json({ message: "Category not found" });
+      sendError(res, 404, "Category not found");
       return;
     }
-    res.status(204).send();
+    sendSuccess(res, null, { message: "Category deleted successfully" });
   } catch (err) {
-    console.error("deleteCategory:", err);
-    res.status(500).json({ message: "Failed to delete category" });
+    handleControllerError(res, err, "deleteCategory", "Failed to delete category");
   }
 }

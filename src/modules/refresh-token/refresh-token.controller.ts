@@ -1,7 +1,12 @@
 import type { Request, Response } from "express";
-import { UniqueConstraintError } from "sequelize";
 
-import { formatZodError } from "../../shared/validation/format-zod-error";
+import {
+  sendError,
+  sendSuccess,
+  sendValidationError,
+} from "../../shared/http/api-response";
+import { handleControllerError } from "../../shared/http/handle-controller-error";
+import { parseRouteId } from "../../shared/http/parse-route-id";
 import {
   createRefreshTokenBodySchema,
   listRefreshTokensQuerySchema,
@@ -27,15 +32,19 @@ export async function listRefreshTokens(
     userId: firstQueryString(req.query.userId),
   });
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
     const rows = await refreshTokenService.listRefreshTokens(parsed.data);
-    res.json({ data: rows });
+    sendSuccess(res, rows, { message: "Refresh tokens listed successfully" });
   } catch (err) {
-    console.error("listRefreshTokens:", err);
-    res.status(500).json({ message: "Failed to list refresh tokens" });
+    handleControllerError(
+      res,
+      err,
+      "listRefreshTokens",
+      "Failed to list refresh tokens",
+    );
   }
 }
 
@@ -45,23 +54,22 @@ export async function createRefreshToken(
 ): Promise<void> {
   const parsed = createRefreshTokenBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
     const row = await refreshTokenService.createRefreshToken(parsed.data);
-    res.status(201).json(row);
+    sendSuccess(res, row, {
+      httpStatus: 201,
+      message: "Refresh token created successfully",
+    });
   } catch (err) {
-    console.error("createRefreshToken:", err);
-    if (err instanceof UniqueConstraintError) {
-      res.status(409).json({ message: "token value already exists" });
-      return;
-    }
-    if (err instanceof Error) {
-      res.status(400).json({ message: err.message });
-      return;
-    }
-    res.status(500).json({ message: "Failed to create refresh token" });
+    handleControllerError(
+      res,
+      err,
+      "createRefreshToken",
+      "Failed to create refresh token",
+    );
   }
 }
 
@@ -69,23 +77,25 @@ export async function getRefreshToken(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   try {
     const row = await refreshTokenService.getRefreshToken(id);
     if (!row) {
-      res.status(404).json({ message: "Refresh token not found" });
+      sendError(res, 404, "Refresh token not found");
       return;
     }
-    res.json(row);
+    sendSuccess(res, row, { message: "Refresh token fetched successfully" });
   } catch (err) {
-    console.error("getRefreshToken:", err);
-    res.status(500).json({ message: "Failed to get refresh token" });
+    handleControllerError(
+      res,
+      err,
+      "getRefreshToken",
+      "Failed to get refresh token",
+    );
   }
 }
 
@@ -93,23 +103,25 @@ export async function deleteRefreshToken(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   try {
     const deleted = await refreshTokenService.deleteRefreshToken(id);
     if (!deleted) {
-      res.status(404).json({ message: "Refresh token not found" });
+      sendError(res, 404, "Refresh token not found");
       return;
     }
-    res.status(204).send();
+    sendSuccess(res, null, { message: "Refresh token deleted successfully" });
   } catch (err) {
-    console.error("deleteRefreshToken:", err);
-    res.status(500).json({ message: "Failed to delete refresh token" });
+    handleControllerError(
+      res,
+      err,
+      "deleteRefreshToken",
+      "Failed to delete refresh token",
+    );
   }
 }
 
@@ -119,7 +131,7 @@ export async function revokeRefreshToken(
 ): Promise<void> {
   const parsed = revokeRefreshTokenBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
@@ -127,12 +139,16 @@ export async function revokeRefreshToken(
       parsed.data.token,
     );
     if (!deleted) {
-      res.status(404).json({ message: "Refresh token not found" });
+      sendError(res, 404, "Refresh token not found");
       return;
     }
-    res.status(204).send();
+    sendSuccess(res, null, { message: "Refresh token revoked successfully" });
   } catch (err) {
-    console.error("revokeRefreshToken:", err);
-    res.status(500).json({ message: "Failed to revoke refresh token" });
+    handleControllerError(
+      res,
+      err,
+      "revokeRefreshToken",
+      "Failed to revoke refresh token",
+    );
   }
 }

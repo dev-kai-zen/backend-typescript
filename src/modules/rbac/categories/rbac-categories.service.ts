@@ -11,15 +11,10 @@ export async function createCategory(
   data: { categoryName: string },
   options: DbOptions = {},
 ): Promise<RbacCategory> {
-  return withTransaction(async (opts) => {
-    if (!data.categoryName || data.categoryName.trim() === "") {
-      throw new Error("categoryName is required");
-    }
-    return rbacCategoriesRepository.createCategory(
-      { categoryName: data.categoryName.trim() },
-      opts,
-    );
-  }, options);
+  return withTransaction(
+    (opts) => rbacCategoriesRepository.createCategory(data, opts),
+    options,
+  );
 }
 
 export async function getCategory(id: number): Promise<RbacCategory | null> {
@@ -31,16 +26,10 @@ export async function updateCategory(
   data: { categoryName: string },
   options: DbOptions = {},
 ): Promise<RbacCategory | null> {
-  return withTransaction(async (opts) => {
-    if (!data.categoryName || data.categoryName.trim() === "") {
-      throw new Error("categoryName is required");
-    }
-    return rbacCategoriesRepository.updateCategory(
-      id,
-      { categoryName: data.categoryName.trim() },
-      opts,
-    );
-  }, options);
+  return withTransaction(
+    (opts) => rbacCategoriesRepository.updateCategory(id, data, opts),
+    options,
+  );
 }
 
 export async function deleteCategory(

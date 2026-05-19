@@ -1,6 +1,10 @@
 import type { Request, Response } from "express";
 
-import { formatZodError } from "../../shared/validation/format-zod-error";
+import {
+  sendSuccess,
+  sendValidationError,
+} from "../../shared/http/api-response";
+import { handleControllerError } from "../../shared/http/handle-controller-error";
 import {
   createUserLogBodySchema,
   listUserLogsQuerySchema,
@@ -29,16 +33,15 @@ export async function listUserLogs(
     offset: firstQueryString(req.query.offset),
   });
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   const { limit, offset, ...filters } = parsed.data;
   try {
     const logs = await userLogsService.listUserLogs(filters, { limit, offset });
-    res.json({ data: logs });
+    sendSuccess(res, logs, { message: "User logs listed successfully" });
   } catch (err) {
-    console.error("listUserLogs:", err);
-    res.status(500).json({ message: "Failed to list user logs" });
+    handleControllerError(res, err, "listUserLogs", "Failed to list user logs");
   }
 }
 
@@ -48,7 +51,7 @@ export async function createUserLog(
 ): Promise<void> {
   const parsed = createUserLogBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
@@ -68,13 +71,11 @@ export async function createUserLog(
       sessionId: parsed.data.sessionId ?? null,
       metadata: parsed.data.metadata ?? null,
     });
-    res.status(201).json(log);
+    sendSuccess(res, log, {
+      httpStatus: 201,
+      message: "User log created successfully",
+    });
   } catch (err) {
-    console.error("createUserLog:", err);
-    if (err instanceof Error) {
-      res.status(400).json({ message: err.message });
-      return;
-    }
-    res.status(500).json({ message: "Failed to create user log" });
+    handleControllerError(res, err, "createUserLog", "Failed to create user log");
   }
 }

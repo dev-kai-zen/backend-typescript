@@ -1,7 +1,12 @@
 import type { Request, Response } from "express";
-import { UniqueConstraintError } from "sequelize";
 
-import { formatZodError } from "../../../shared/validation/format-zod-error";
+import {
+  sendError,
+  sendSuccess,
+  sendValidationError,
+} from "../../../shared/http/api-response";
+import { handleControllerError } from "../../../shared/http/handle-controller-error";
+import { parseRouteId } from "../../../shared/http/parse-route-id";
 import {
   createAsaBranchTypeBodySchema,
   updateAsaBranchTypeBodySchema,
@@ -14,10 +19,14 @@ export async function listAsaBranchTypes(
 ): Promise<void> {
   try {
     const rows = await asaBranchTypeService.listAsaBranchTypes();
-    res.json({ data: rows });
+    sendSuccess(res, rows, { message: "ASA branch types listed successfully" });
   } catch (err) {
-    console.error("listAsaBranchTypes:", err);
-    res.status(500).json({ message: "Failed to list ASA branch types" });
+    handleControllerError(
+      res,
+      err,
+      "listAsaBranchTypes",
+      "Failed to list ASA branch types",
+    );
   }
 }
 
@@ -27,44 +36,48 @@ export async function createAsaBranchType(
 ): Promise<void> {
   const parsed = createAsaBranchTypeBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
     const row = await asaBranchTypeService.createAsaBranchType(parsed.data);
-    res.status(201).json(row);
+    sendSuccess(res, row, {
+      httpStatus: 201,
+      message: "ASA branch type created successfully",
+    });
   } catch (err) {
-    console.error("createAsaBranchType:", err);
-    if (err instanceof UniqueConstraintError) {
-      res.status(409).json({ message: "typeName already exists" });
-      return;
-    }
-    if (err instanceof Error) {
-      res.status(400).json({ message: err.message });
-      return;
-    }
-    res.status(500).json({ message: "Failed to create ASA branch type" });
+    handleControllerError(
+      res,
+      err,
+      "createAsaBranchType",
+      "Failed to create ASA branch type",
+    );
   }
 }
 
-export async function getAsaBranchType(req: Request, res: Response): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+export async function getAsaBranchType(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   try {
     const row = await asaBranchTypeService.getAsaBranchType(id);
     if (!row) {
-      res.status(404).json({ message: "ASA branch type not found" });
+      sendError(res, 404, "ASA branch type not found");
       return;
     }
-    res.json(row);
+    sendSuccess(res, row, { message: "ASA branch type fetched successfully" });
   } catch (err) {
-    console.error("getAsaBranchType:", err);
-    res.status(500).json({ message: "Failed to get ASA branch type" });
+    handleControllerError(
+      res,
+      err,
+      "getAsaBranchType",
+      "Failed to get ASA branch type",
+    );
   }
 }
 
@@ -72,36 +85,30 @@ export async function updateAsaBranchType(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   const parsed = updateAsaBranchTypeBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
     const row = await asaBranchTypeService.updateAsaBranchType(id, parsed.data);
     if (!row) {
-      res.status(404).json({ message: "ASA branch type not found" });
+      sendError(res, 404, "ASA branch type not found");
       return;
     }
-    res.json(row);
+    sendSuccess(res, row, { message: "ASA branch type updated successfully" });
   } catch (err) {
-    console.error("updateAsaBranchType:", err);
-    if (err instanceof UniqueConstraintError) {
-      res.status(409).json({ message: "typeName already exists" });
-      return;
-    }
-    if (err instanceof Error) {
-      res.status(400).json({ message: err.message });
-      return;
-    }
-    res.status(500).json({ message: "Failed to update ASA branch type" });
+    handleControllerError(
+      res,
+      err,
+      "updateAsaBranchType",
+      "Failed to update ASA branch type",
+    );
   }
 }
 
@@ -109,22 +116,24 @@ export async function deleteAsaBranchType(
   req: Request,
   res: Response,
 ): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   try {
     const deleted = await asaBranchTypeService.deleteAsaBranchType(id);
     if (!deleted) {
-      res.status(404).json({ message: "ASA branch type not found" });
+      sendError(res, 404, "ASA branch type not found");
       return;
     }
-    res.status(204).send();
+    sendSuccess(res, null, { message: "ASA branch type deleted successfully" });
   } catch (err) {
-    console.error("deleteAsaBranchType:", err);
-    res.status(500).json({ message: "Failed to delete ASA branch type" });
+    handleControllerError(
+      res,
+      err,
+      "deleteAsaBranchType",
+      "Failed to delete ASA branch type",
+    );
   }
 }

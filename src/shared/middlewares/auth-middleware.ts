@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 
+import { sendError } from "../http/api-response";
 import { User } from "../../modules/users/users.model";
 import {
   type AccessTokenPayload,
@@ -13,7 +14,7 @@ export async function authenticateJwt(
 ): Promise<void> {
   const header = req.headers.authorization;
   if (!header?.startsWith("Bearer ")) {
-    res.status(401).json({ success: false, message: "Unauthorized" });
+    sendError(res, 401, "Unauthorized");
     return;
   }
 
@@ -23,15 +24,13 @@ export async function authenticateJwt(
   try {
     payload = verifyAccessTokenPayload(token);
   } catch {
-    res
-      .status(401)
-      .json({ success: false, message: "Invalid or expired token" });
+    sendError(res, 401, "Invalid or expired token");
     return;
   }
 
   const user = await User.findByPk(payload.sub);
   if (!user || !user.is_active) {
-    res.status(401).json({ success: false, message: "Unauthorized" });
+    sendError(res, 401, "Unauthorized");
     return;
   }
 

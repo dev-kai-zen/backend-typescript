@@ -11,15 +11,10 @@ export async function createAsaBranchType(
   data: { typeName: string },
   options: DbOptions = {},
 ): Promise<AsaBranchType> {
-  return withTransaction(async (opts) => {
-    if (!data.typeName || data.typeName.trim() === "") {
-      throw new Error("typeName is required");
-    }
-    return asaBranchTypeRepository.createAsaBranchType(
-      { typeName: data.typeName.trim() },
-      opts,
-    );
-  }, options);
+  return withTransaction(
+    (opts) => asaBranchTypeRepository.createAsaBranchType(data, opts),
+    options,
+  );
 }
 
 export async function getAsaBranchType(
@@ -33,16 +28,10 @@ export async function updateAsaBranchType(
   data: { typeName: string },
   options: DbOptions = {},
 ): Promise<AsaBranchType | null> {
-  return withTransaction(async (opts) => {
-    if (!data.typeName || data.typeName.trim() === "") {
-      throw new Error("typeName is required");
-    }
-    return asaBranchTypeRepository.updateAsaBranchType(
-      id,
-      { typeName: data.typeName.trim() },
-      opts,
-    );
-  }, options);
+  return withTransaction(
+    (opts) => asaBranchTypeRepository.updateAsaBranchType(id, data, opts),
+    options,
+  );
 }
 
 export async function deleteAsaBranchType(

@@ -1,7 +1,12 @@
 import type { Request, Response } from "express";
-import { UniqueConstraintError } from "sequelize";
 
-import { formatZodError } from "../../../shared/validation/format-zod-error";
+import {
+  sendError,
+  sendSuccess,
+  sendValidationError,
+} from "../../../shared/http/api-response";
+import { handleControllerError } from "../../../shared/http/handle-controller-error";
+import { parseRouteId } from "../../../shared/http/parse-route-id";
 import {
   createRoleBodySchema,
   updateRoleBodySchema,
@@ -11,115 +16,84 @@ import * as rolesService from "./rbac-roles.service";
 export async function listRoles(_req: Request, res: Response): Promise<void> {
   try {
     const roles = await rolesService.listRoles();
-    res.json({ data: roles });
+    sendSuccess(res, roles, { message: "Roles listed successfully" });
   } catch (err) {
-    console.error("listRoles:", err);
-    res.status(500).json({ message: "Failed to list roles" });
+    handleControllerError(res, err, "listRoles", "Failed to list roles");
   }
 }
 
 export async function createRole(req: Request, res: Response): Promise<void> {
   const parsed = createRoleBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
-    const role = await rolesService.createRole({
-      roleName: parsed.data.roleName,
-      roleDescription: parsed.data.roleDescription ?? null,
+    const role = await rolesService.createRole(parsed.data);
+    sendSuccess(res, role, {
+      httpStatus: 201,
+      message: "Role created successfully",
     });
-    res.status(201).json(role);
   } catch (err) {
-    console.error("createRole:", err);
-    if (err instanceof UniqueConstraintError) {
-      res.status(409).json({ message: "roleName already exists" });
-      return;
-    }
-    if (err instanceof Error) {
-      res.status(400).json({ message: err.message });
-      return;
-    }
-    res.status(500).json({ message: "Failed to create role" });
+    handleControllerError(res, err, "createRole", "Failed to create role");
   }
 }
 
 export async function getRole(req: Request, res: Response): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   try {
     const role = await rolesService.getRole(id);
     if (!role) {
-      res.status(404).json({ message: "Role not found" });
+      sendError(res, 404, "Role not found");
       return;
     }
-    res.json(role);
+    sendSuccess(res, role, { message: "Role fetched successfully" });
   } catch (err) {
-    console.error("getRole:", err);
-    res.status(500).json({ message: "Failed to get role" });
+    handleControllerError(res, err, "getRole", "Failed to get role");
   }
 }
 
 export async function updateRole(req: Request, res: Response): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   const parsed = updateRoleBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    res.status(400).json({ message: formatZodError(parsed.error) });
+    sendValidationError(res, parsed.error);
     return;
   }
   try {
-    const role = await rolesService.updateRole(id, {
-      roleName: parsed.data.roleName,
-      roleDescription: parsed.data.roleDescription,
-      isActive: parsed.data.isActive,
-    });
+    const role = await rolesService.updateRole(id, parsed.data);
     if (!role) {
-      res.status(404).json({ message: "Role not found" });
+      sendError(res, 404, "Role not found");
       return;
     }
-    res.json(role);
+    sendSuccess(res, role, { message: "Role updated successfully" });
   } catch (err) {
-    console.error("updateRole:", err);
-    if (err instanceof UniqueConstraintError) {
-      res.status(409).json({ message: "roleName already exists" });
-      return;
-    }
-    if (err instanceof Error) {
-      res.status(400).json({ message: err.message });
-      return;
-    }
-    res.status(500).json({ message: "Failed to update role" });
+    handleControllerError(res, err, "updateRole", "Failed to update role");
   }
 }
 
 export async function deleteRole(req: Request, res: Response): Promise<void> {
-  const raw = req.params.id;
-  const id =
-    typeof raw === "string" ? Number.parseInt(raw, 10) : Number.NaN;
-  if (!Number.isFinite(id)) {
-    res.status(400).json({ message: "Invalid id" });
+  const id = parseRouteId(req.params.id);
+  if (id === null) {
+    sendError(res, 400, "Invalid id");
     return;
   }
   try {
     const deleted = await rolesService.deleteRole(id);
     if (!deleted) {
-      res.status(404).json({ message: "Role not found" });
+      sendError(res, 404, "Role not found");
       return;
     }
-    res.status(204).send();
+    sendSuccess(res, null, { message: "Role deleted successfully" });
   } catch (err) {
-    console.error("deleteRole:", err);
-    res.status(500).json({ message: "Failed to delete role" });
+    handleControllerError(res, err, "deleteRole", "Failed to delete role");
   }
 }

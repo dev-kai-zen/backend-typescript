@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 
+import { sendError } from "../http/api-response";
 import * as rbacPermissionsService from "../../modules/rbac/permissions/rbac-permissions.service";
 import * as rbacRolePermissionsService from "../../modules/rbac/role-permissions/rbac-role-permissions.service";
 import * as rbacRolesService from "../../modules/rbac/roles/rbac-roles.service";
@@ -89,7 +90,7 @@ function routesGuard(options: GuardOptions) {
   ): Promise<void> {
     const authUser = req.authUser;
     if (!authUser) {
-      res.status(403).json({ message: "Forbidden" });
+      sendError(res, 403, "Forbidden");
       return;
     }
 
@@ -100,7 +101,7 @@ function routesGuard(options: GuardOptions) {
       roleReq &&
       !(await rbacRolesService.roleDefinitionsEligibleForGuard(roleReq))
     ) {
-      res.status(403).json({ message: "Forbidden" });
+      sendError(res, 403, "Forbidden");
       return;
     }
     if (
@@ -109,7 +110,7 @@ function routesGuard(options: GuardOptions) {
         permReq,
       ))
     ) {
-      res.status(403).json({ message: "Forbidden" });
+      sendError(res, 403, "Forbidden");
       return;
     }
 
@@ -125,7 +126,7 @@ function routesGuard(options: GuardOptions) {
     }
 
     if (!hasAccess(principal, options)) {
-      res.status(403).json({ message: "Forbidden" });
+      sendError(res, 403, "Forbidden");
       return;
     }
 
