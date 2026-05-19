@@ -1,6 +1,7 @@
 import type { WhereOptions } from "sequelize";
 import { Op } from "sequelize";
 
+import type { DbOptions } from "../../../shared/types/db-options";
 import { RbacPermission } from "./rbac-permissions.model";
 
 export async function permissionDefinitionsEligibleForGuard(
@@ -28,16 +29,22 @@ export async function listPermissions(filters: {
   return RbacPermission.findAll({ where, order: [["id", "ASC"]] });
 }
 
-export async function createPermission(data: {
-  permissionCode: string;
-  permissionDescription: string | null;
-  categoryId: number | null;
-}): Promise<RbacPermission> {
-  return RbacPermission.create({
-    permission_code: data.permissionCode,
-    permission_description: data.permissionDescription,
-    category_id: data.categoryId,
-  });
+export async function createPermission(
+  data: {
+    permissionCode: string;
+    permissionDescription: string | null;
+    categoryId: number | null;
+  },
+  options: DbOptions = {},
+): Promise<RbacPermission> {
+  return RbacPermission.create(
+    {
+      permission_code: data.permissionCode,
+      permission_description: data.permissionDescription,
+      category_id: data.categoryId,
+    },
+    options,
+  );
 }
 
 export async function getPermission(
@@ -54,8 +61,9 @@ export async function updatePermission(
     categoryId?: number | null;
     isActive?: boolean;
   },
+  options: DbOptions = {},
 ): Promise<RbacPermission | null> {
-  const row = await RbacPermission.findByPk(id);
+  const row = await RbacPermission.findByPk(id, options);
   if (!row) {
     return null;
   }
@@ -77,11 +85,14 @@ export async function updatePermission(
   if (data.isActive !== undefined) {
     patch.is_active = data.isActive;
   }
-  await row.update(patch);
+  await row.update(patch, options);
   return row;
 }
 
-export async function deletePermission(id: number): Promise<boolean> {
-  const deleted = await RbacPermission.destroy({ where: { id } });
+export async function deletePermission(
+  id: number,
+  options: DbOptions = {},
+): Promise<boolean> {
+  const deleted = await RbacPermission.destroy({ where: { id }, ...options });
   return deleted > 0;
 }

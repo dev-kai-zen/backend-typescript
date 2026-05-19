@@ -1,5 +1,6 @@
 import type { WhereOptions } from "sequelize";
 
+import type { DbOptions } from "../../shared/types/db-options";
 import type {
   CreateRefreshTokenInput,
   ListRefreshTokensFilters,
@@ -21,12 +22,16 @@ export async function listRefreshTokens(
 
 export async function createRefreshToken(
   input: CreateRefreshTokenInput,
+  options: DbOptions = {},
 ): Promise<RefreshToken> {
-  return RefreshToken.create({
-    user_id: input.userId,
-    token: input.token,
-    expires_at: input.expiresAt,
-  });
+  return RefreshToken.create(
+    {
+      user_id: input.userId,
+      token: input.token,
+      expires_at: input.expiresAt,
+    },
+    options,
+  );
 }
 
 export async function getRefreshToken(
@@ -35,12 +40,18 @@ export async function getRefreshToken(
   return RefreshToken.findByPk(id);
 }
 
-export async function deleteRefreshToken(id: number): Promise<boolean> {
-  const deleted = await RefreshToken.destroy({ where: { id } });
+export async function deleteRefreshToken(
+  id: number,
+  options: DbOptions = {},
+): Promise<boolean> {
+  const deleted = await RefreshToken.destroy({ where: { id }, ...options });
   return deleted > 0;
 }
 
-export async function revokeRefreshToken(token: string): Promise<boolean> {
-  const deleted = await RefreshToken.destroy({ where: { token } });
+export async function revokeRefreshToken(
+  token: string,
+  options: DbOptions = {},
+): Promise<boolean> {
+  const deleted = await RefreshToken.destroy({ where: { token }, ...options });
   return deleted > 0;
 }

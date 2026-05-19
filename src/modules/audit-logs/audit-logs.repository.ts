@@ -1,5 +1,6 @@
 import type { WhereOptions } from "sequelize";
 
+import type { DbOptions } from "../../shared/types/db-options";
 import { AuditLog } from "./audit-logs.model";
 import type {
   CreateAuditLogInput,
@@ -28,23 +29,28 @@ export async function listAuditLogs(
 
 export async function createAuditLog(
   input: CreateAuditLogInput,
+  options: DbOptions = {},
 ): Promise<AuditLog> {
-  return AuditLog.create({
-    user_id: input.user_id ?? null,
-    action: input.action,
-    entity_type: input.entity_type,
-    entity_id: input.entity_id ?? null,
-    old_values: input.old_values ?? null,
-    new_values: input.new_values ?? null,
-    change_fields: input.change_fields ?? null,
-    ip_address: input.ip_address ?? null,
-    user_agent: input.user_agent ?? null,
-    timestamp: input.timestamp ?? new Date(),
-  });
+  return AuditLog.create(
+    {
+      user_id: input.user_id ?? null,
+      action: input.action,
+      entity_type: input.entity_type,
+      entity_id: input.entity_id ?? null,
+      old_values: input.old_values ?? null,
+      new_values: input.new_values ?? null,
+      change_fields: input.change_fields ?? null,
+      ip_address: input.ip_address ?? null,
+      user_agent: input.user_agent ?? null,
+      timestamp: input.timestamp ?? new Date(),
+    },
+    options,
+  );
 }
 
 export async function createAuditLogs(
   inputs: CreateAuditLogInput[],
+  options: DbOptions = {},
 ): Promise<AuditLog[]> {
   if (inputs.length === 0) {
     return [];
@@ -62,6 +68,6 @@ export async function createAuditLogs(
       user_agent: input.user_agent ?? null,
       timestamp: input.timestamp ?? new Date(),
     })),
-    { validate: true },
+    { ...options, validate: true },
   );
 }

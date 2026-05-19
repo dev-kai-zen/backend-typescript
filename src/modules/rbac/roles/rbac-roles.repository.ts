@@ -1,5 +1,6 @@
 import { Op } from "sequelize";
 
+import type { DbOptions } from "../../../shared/types/db-options";
 import { Role } from "./rbac-roles.model";
 
 export async function roleDefinitionsEligibleForGuard(
@@ -21,14 +22,20 @@ export async function listRoles(): Promise<Role[]> {
   return Role.findAll({ order: [["id", "ASC"]] });
 }
 
-export async function createRole(data: {
-  roleName: string;
-  roleDescription: string | null;
-}): Promise<Role> {
-  return Role.create({
-    role_name: data.roleName,
-    role_description: data.roleDescription,
-  });
+export async function createRole(
+  data: {
+    roleName: string;
+    roleDescription: string | null;
+  },
+  options: DbOptions = {},
+): Promise<Role> {
+  return Role.create(
+    {
+      role_name: data.roleName,
+      role_description: data.roleDescription,
+    },
+    options,
+  );
 }
 
 export async function getRole(id: number): Promise<Role | null> {
@@ -42,8 +49,9 @@ export async function updateRole(
     roleDescription?: string | null;
     isActive?: boolean;
   },
+  options: DbOptions = {},
 ): Promise<Role | null> {
-  const role = await Role.findByPk(id);
+  const role = await Role.findByPk(id, options);
   if (!role) {
     return null;
   }
@@ -61,11 +69,14 @@ export async function updateRole(
   if (data.isActive !== undefined) {
     patch.is_active = data.isActive;
   }
-  await role.update(patch);
+  await role.update(patch, options);
   return role;
 }
 
-export async function deleteRole(id: number): Promise<boolean> {
-  const deleted = await Role.destroy({ where: { id } });
+export async function deleteRole(
+  id: number,
+  options: DbOptions = {},
+): Promise<boolean> {
+  const deleted = await Role.destroy({ where: { id }, ...options });
   return deleted > 0;
 }

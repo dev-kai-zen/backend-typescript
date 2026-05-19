@@ -1,5 +1,6 @@
 import { Op, type WhereOptions } from "sequelize";
 
+import type { DbOptions } from "../../shared/types/db-options";
 import { RbacUserRole } from "../rbac/user-roles/rbac-user-roles.model";
 import { User } from "./users.model";
 import type { CreateUserInput, ListUsersFilters } from "./users.types";
@@ -31,15 +32,21 @@ export async function listUsers(filters: ListUsersFilters): Promise<User[]> {
   });
 }
 
-export async function createUser(data: CreateUserInput): Promise<User> {
-  return User.create({
-    email: data.email,
-    google_id: data.googleId ?? null,
-    full_name: data.fullName ?? null,
-    picture_url: data.pictureUrl ?? null,
-    is_active: data.isActive ?? true,
-    last_login_at: null,
-  });
+export async function createUser(
+  data: CreateUserInput,
+  options: DbOptions = {},
+): Promise<User> {
+  return User.create(
+    {
+      email: data.email,
+      google_id: data.googleId ?? null,
+      full_name: data.fullName ?? null,
+      picture_url: data.pictureUrl ?? null,
+      is_active: data.isActive ?? true,
+      last_login_at: null,
+    },
+    options,
+  );
 }
 
 export async function getUser(id: number): Promise<User | null> {
@@ -56,8 +63,9 @@ export async function updateUser(
     isActive: boolean;
     lastLoginAt: Date | null;
   }>,
+  options: DbOptions = {},
 ): Promise<User | null> {
-  const user = await User.findByPk(id);
+  const user = await User.findByPk(id, options);
   if (!user) {
     return null;
   }
@@ -87,11 +95,18 @@ export async function updateUser(
   if (data.lastLoginAt !== undefined) {
     patch.last_login_at = data.lastLoginAt;
   }
-  await user.update(patch);
-  return user;
+  await user.update(patch, options);
+  return user.reload(options);
 }
 
-export async function deleteUser(id: number): Promise<boolean> {
-  const deleted = await User.destroy({ where: { id } });
-  return deleted > 0;
+export async function deleteUser(
+  id: number,
+  options: DbOptions = {},
+): Promise<boolean> {
+  const user = await User.findByPk(id, options);
+  if (!user) {
+    return false;
+  }
+  await user.destroy(options);
+  return true;
 }

@@ -1,5 +1,6 @@
 import type { WhereOptions } from "sequelize";
 
+import type { DbOptions } from "../../shared/types/db-options";
 import { UserLog } from "./user-logs.model";
 import type {
   CreateUserLogInput,
@@ -31,21 +32,25 @@ export async function listUserLogs(
 
 export async function createUserLog(
   input: CreateUserLogInput,
+  options: DbOptions = {},
 ): Promise<UserLog> {
-  return UserLog.create({
-    user_id: input.userId ?? null,
-    action: input.action,
-    module: input.module ?? null,
-    description: input.description ?? null,
-    method: input.method ?? null,
-    route: input.route ?? null,
-    status_code: input.statusCode ?? null,
-    ip_address: input.ipAddress ?? null,
-    user_agent: input.userAgent ?? null,
-    device_type: input.deviceType ?? null,
-    browser: input.browser ?? null,
-    os: input.os ?? null,
-    session_id: input.sessionId ?? null,
-    metadata: input.metadata ?? null,
-  });
+  return UserLog.create(
+    {
+      user_id: input.userId ?? null,
+      action: input.action,
+      module: input.module ?? null,
+      description: input.description ?? null,
+      method: input.method ?? null,
+      route: input.route ?? null,
+      status_code: input.statusCode ?? null,
+      ip_address: input.ipAddress ?? null,
+      user_agent: input.userAgent ?? null,
+      device_type: input.deviceType ?? null,
+      browser: input.browser ?? null,
+      os: input.os ?? null,
+      session_id: input.sessionId ?? null,
+      metadata: input.metadata ?? null,
+    },
+    options,
+  );
 }

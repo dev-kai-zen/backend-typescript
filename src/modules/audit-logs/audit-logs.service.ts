@@ -1,3 +1,5 @@
+import { withTransaction } from "../../shared/db/with-transaction";
+import type { DbOptions } from "../../shared/types/db-options";
 import * as auditLogsRepository from "./audit-logs.repository";
 import type { AuditLog } from "./audit-logs.model";
 import type { CreateAuditLogInput, ListAuditLogsFilters } from "./audit-logs.types";
@@ -19,12 +21,20 @@ export async function listAuditLogs(
 
 export async function createAuditLog(
   input: CreateAuditLogInput,
+  options: DbOptions = {},
 ): Promise<AuditLog> {
-  return auditLogsRepository.createAuditLog(input);
+  return withTransaction(
+    (opts) => auditLogsRepository.createAuditLog(input, opts),
+    options,
+  );
 }
 
 export async function createAuditLogs(
   inputs: CreateAuditLogInput[],
+  options: DbOptions = {},
 ): Promise<AuditLog[]> {
-  return auditLogsRepository.createAuditLogs(inputs);
+  return withTransaction(
+    (opts) => auditLogsRepository.createAuditLogs(inputs, opts),
+    options,
+  );
 }
