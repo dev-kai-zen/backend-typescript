@@ -24,6 +24,6 @@ describe("parseRouteId", () => {
     [],
     [""],
   ] as const)("returns null for invalid input (%j)", (raw) => {
-    expect(parseRouteId(raw)).toBeNull();
+    expect(parseRouteId(raw as string | string[] | undefined)).toBeNull();
   });
 });

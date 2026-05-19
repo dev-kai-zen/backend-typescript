@@ -103,7 +103,7 @@ Search the repo for `backend-typescript` and `boilerplate` and replace where it 
 | **`src/modules/content-management/`** | Example CRUD for ASA divisions/regions/areas/etc. Remove the module and drop related migrations if your domain does not need them—or keep as a pattern for new modules. |
 | **Other modules** | `users`, `google-auth`, `refresh-token`, `rbac`, `user-logs`, `audit-logs` are core to auth and authorization; keep or trim based on your product. |
 
-New features: add a folder under `src/modules/<name>/` with `routes.register.ts` exporting `registerV1Routes`. The bootstrap in `src/bootstrap/register-module-routes.ts` discovers registers automatically.
+New features: add a folder under `src/modules/<name>/` with `routes.register.ts` exporting `registerV1Routes`. The bootstrap in `src/bootstrap/register-module-routes.ts` discovers registers automatically. See **[docs/how-to-add-module.md](docs/how-to-add-module.md)** for the full walkthrough.
 
 ### 6. Production and Docker checklist
 
@@ -142,6 +142,7 @@ See [docs/deployment-guide.md](docs/deployment-guide.md) for health checks, port
 
 | Topic | File |
 |-------|------|
+| How to add a new module | [docs/how-to-add-module.md](docs/how-to-add-module.md) |
 | How to create a test file (junior guide) | [docs/how-to-create-test-file.md](docs/how-to-create-test-file.md) |
 | Migrations (create, up, down, status) | [docs/db-migrations.md](docs/db-migrations.md) |
 | Docker deploy and migrate workflow | [docs/deployment-guide.md](docs/deployment-guide.md) |
